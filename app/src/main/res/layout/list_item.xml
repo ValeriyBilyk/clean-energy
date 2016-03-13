@@ -7,8 +7,9 @@
     <TextView
         android:id="@+id/txtItem"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:paddingTop="6dp"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:paddingTop="5dp"
         android:textAlignment="center"
         android:text="Транспорт"
         android:textColor="@color/fontColor"

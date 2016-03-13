@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/group_choose_category"
+        android:checkableBehavior="single">
+
+        <item android:id="@+id/choose_category"
+            android:checked="false"
+            android:title="@string/choose_category">
+        </item>
+
+    </group>
+
+    <group
+        android:id="@+id/group_statistic"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/statistic_item_day"
+            android:checked="false"
+            android:title="@string/statistic_day" />
+
+        <item
+            android:id="@+id/statistic_item_week"
+            android:checked="false"
+            android:title="@string/statistic_week" />
+
+        <item
+            android:id="@+id/statistic_item_month"
+            android:checked="false"
+            android:title="@string/statistic_month" />
+    </group>
+
+    <group
+        android:id="@+id/group_log_out"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/exit"
+            android:checked="false"
+            android:title="Выйти" />
+    </group>
+</menu>

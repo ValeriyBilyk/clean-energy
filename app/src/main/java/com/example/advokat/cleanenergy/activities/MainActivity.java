@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
+import com.example.advokat.cleanenergy.fragments.ChooseCategoryFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticDayFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticMonthFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticWeekFragment;
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
 
-
                 //Checking if the item is in checked state or not, if not make it in checked state
                 if (menuItem.isChecked()) {
                     menuItem.setChecked(false);
@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //Replacing the main content with StatisticDayFragment Which is our Inbox View;
                     case R.id.choose_category:
-                        Toast.makeText(getApplicationContext(), "Choose category", Toast.LENGTH_SHORT).show();
+                        replaceFragment(new ChooseCategoryFragment());
                         return true;
 
                     case R.id.statistic_item_day:
@@ -111,7 +111,9 @@ public class MainActivity extends AppCompatActivity {
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
 
-
+        if (savedInstanceState == null) {
+            navigationView.getMenu().performIdentifierAction(R.id.choose_category, 0);
+        }
 
     }
 
@@ -120,4 +122,5 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.frame, fragment)
                 .commit();
     }
+
 }

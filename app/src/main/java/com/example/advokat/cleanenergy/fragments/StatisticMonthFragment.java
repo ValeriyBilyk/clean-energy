@@ -14,6 +14,6 @@ public class StatisticMonthFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.statistic_month_fragment, container, false);
+        return inflater.inflate(R.layout.fragment_statistic_month, container, false);
     }
 }

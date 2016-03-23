@@ -11,6 +11,6 @@
     <string name="choose_category">Выбор категории</string>
     <string name="costs">Costs</string>
     <string name="sign_out">Sign out</string>
-    <string name="that_bought">That bought</string>
-    <string name="unit_of_measurement">Unit of measurement</string>
+    <string name="that_bought">Что куплено:</string>
+    <string name="unit_of_measurement">Еденица измерения:</string>
 </resources>

@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.fragments.ChooseCategoryFragment;
+import com.example.advokat.cleanenergy.fragments.CostsFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticDayFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticMonthFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticWeekFragment;
@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
                 switch (menuItem.getItemId()) {
 
                     //Replacing the main content with StatisticDayFragment Which is our Inbox View;
-                    case R.id.choose_category:
-                        replaceFragment(new ChooseCategoryFragment());
+                    case R.id.costs:
+                        replaceFragment(new CostsFragment());
                         return true;
 
                     case R.id.statistic_item_day:
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         actionBarDrawerToggle.syncState();
 
         if (savedInstanceState == null) {
-            navigationView.getMenu().performIdentifierAction(R.id.choose_category, 0);
+            navigationView.getMenu().performIdentifierAction(R.id.costs, 0);
         }
 
     }

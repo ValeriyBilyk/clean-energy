@@ -5,10 +5,10 @@
         android:id="@+id/group_choose_category"
         android:checkableBehavior="single">
 
-        <item android:id="@+id/choose_category"
+        <item
+            android:id="@+id/costs"
             android:checked="false"
-            android:title="@string/choose_category">
-        </item>
+            android:title="@string/costs"/>
 
     </group>
 
@@ -38,6 +38,6 @@
         <item
             android:id="@+id/exit"
             android:checked="false"
-            android:title="Выйти" />
+            android:title="@string/sign_out" />
     </group>
 </menu>

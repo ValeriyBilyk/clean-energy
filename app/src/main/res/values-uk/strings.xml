@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">CleanEnergy</string>
+    <string name="sign_in">Вхід</string>
+    <string name="hint_login">Логін</string>
+    <string name="hint_password">Пароль</string>
+    <string name="closeDrawer">Navigation View</string>
+    <string name="openDrawer">Navigation View Closed</string>
+    <string name="statistic_day">Статистика за день</string>
+    <string name="statistic_week">Статистика за неділю</string>
+    <string name="statistic_month">Статистика за місяць</string>
+    <string name="choose_category">Вибір категорії</string>
+    <string name="costs">Витрати</string>
+    <string name="sign_out">Вийти</string>
+    <string name="that_bought">Що куплено:</string>
+    <string name="unit_of_measurement">Одиниця вимірювання:</string>
+</resources>

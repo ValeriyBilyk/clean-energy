@@ -15,4 +15,13 @@
     <string name="unit_of_measurement">Unit of measurement</string>
     <string name="count">Count</string>
     <string name="cost">Cost</string>
+    <string name="payer">Payer</string>
+    <string name="date_costs">Date costs</string>
+    <string name="date">Date</string>
+    <string name="description">Description</string>
+    <string name="send">Send</string>
+    <string name="category_expenses">Category expenses</string>
+    <string name="name_purchase">Name purchase</string>
+    <string name="constant">Fixed</string>
+    <string name="m_volatile">Volatile</string>
 </resources>

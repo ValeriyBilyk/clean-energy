@@ -15,4 +15,13 @@
     <string name="unit_of_measurement">Одиниця вимірювання:</string>
     <string name="count">Кількість</string>
     <string name="cost">Вартість</string>
+    <string name="payer">Платник:</string>
+    <string name="date_costs">Дата витрати</string>
+    <string name="date">Дата</string>
+    <string name="description">Опис</string>
+    <string name="send">Відправити</string>
+    <string name="category_expenses">Категорія витрат:</string>
+    <string name="name_purchase">Назва витрати</string>
+    <string name="constant">Постійні</string>
+    <string name="m_volatile">Непостійні</string>
 </resources>

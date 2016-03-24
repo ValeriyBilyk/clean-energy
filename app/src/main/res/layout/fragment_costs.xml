@@ -33,7 +33,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/that_bought"
                     android:textColor="#000"
                     android:textSize="20sp" />
@@ -54,14 +54,37 @@
 
             <LinearLayout
                 android:id="@+id/tab_steady"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <Button
-                    android:id="@+id/button2"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Кнопка на второй вкладке" />
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/category_expenses"
+                    android:textColor="#000"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/customborder">
+
+                    <Spinner
+                        android:id="@+id/spinner_category_expenses"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    </Spinner>
+                </LinearLayout>
+
+                <EditText
+                    android:hint="@string/name_purchase"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
         </FrameLayout>
@@ -87,13 +110,13 @@
                         android:id="@+id/measurement_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignLeft="@+id/unit_of_measurement"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignStart="@+id/unit_of_measurement"
                         android:layout_marginBottom="8dp"
                         android:text="@string/unit_of_measurement"
                         android:textColor="#000"
-                        android:textSize="16sp"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignLeft="@+id/unit_of_measurement"
-                        android:layout_alignStart="@+id/unit_of_measurement" />
+                        android:textSize="16sp" />
 
                     <EditText
                         android:id="@+id/count_text"
@@ -102,15 +125,16 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignTop="@+id/unit_of_measurement"
-                        android:hint="@string/count" />
+                        android:hint="@string/count"
+                        android:inputType="number" />
 
                     <LinearLayout
                         android:id="@+id/unit_of_measurement"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
                         android:layout_below="@+id/measurement_text_view"
                         android:layout_marginLeft="16dp"
-                        android:layout_alignParentBottom="true"
                         android:layout_toEndOf="@+id/count_text"
                         android:layout_toRightOf="@+id/count_text"
                         android:background="@drawable/customborder">
@@ -126,19 +150,20 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp">
 
                     <TextView
                         android:id="@+id/payer_text_view"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="Payer"
-                        android:textColor="#000"
-                        android:textSize="16sp"
-                        android:layout_alignParentTop="true"
                         android:layout_alignLeft="@+id/payer"
-                        android:layout_alignStart="@+id/payer" />
+                        android:layout_alignParentTop="true"
+                        android:layout_alignStart="@+id/payer"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/payer"
+                        android:textColor="#000"
+                        android:textSize="16sp" />
 
                     <EditText
                         android:id="@+id/cost_text"
@@ -147,15 +172,16 @@
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_alignTop="@+id/payer"
-                        android:hint="@string/cost" />
+                        android:hint="@string/cost"
+                        android:inputType="number" />
 
                     <LinearLayout
                         android:id="@+id/payer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
                         android:layout_below="@+id/payer_text_view"
                         android:layout_marginLeft="16dp"
-                        android:layout_alignParentBottom="true"
                         android:layout_toEndOf="@+id/cost_text"
                         android:layout_toRightOf="@+id/cost_text"
                         android:background="@drawable/customborder">
@@ -164,8 +190,40 @@
                             android:id="@+id/spinner_payer"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content">
+
                         </Spinner>
                     </LinearLayout>
+                </RelativeLayout>
+
+                <EditText
+                    android:id="@+id/date_edit_text"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/date"
+                    android:inputType="date" />
+
+                <EditText
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/description" />
+
+                <RelativeLayout
+                    android:layout_marginTop="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:text="@string/send"
+                        android:textColor="@color/white"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true" />
                 </RelativeLayout>
             </LinearLayout>
         </ScrollView>

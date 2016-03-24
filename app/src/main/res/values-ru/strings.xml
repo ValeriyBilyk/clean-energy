@@ -15,4 +15,13 @@
     <string name="unit_of_measurement">Еденица измерения:</string>
     <string name="count">Количество</string>
     <string name="cost">Стоимость</string>
+    <string name="payer">Плательщик:</string>
+    <string name="date_costs">Дата расходов:</string>
+    <string name="date">Дата</string>
+    <string name="description">Описание</string>
+    <string name="send">Отправить</string>
+    <string name="category_expenses">Категория расходов:</string>
+    <string name="name_purchase">Название расходов</string>
+    <string name="constant">Постоянные</string>
+    <string name="m_volatile">Непостоянные</string>
 </resources>

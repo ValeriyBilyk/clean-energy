@@ -5,12 +5,14 @@
     <string name="hint_password">Пароль</string>
     <string name="closeDrawer">Navigation View</string>
     <string name="openDrawer">Navigation View Closed</string>
-    <string name="statistic_day">Статистика за день</string>
-    <string name="statistic_week">Статистика за неделю</string>
-    <string name="statistic_month">Статистика за месяц</string>
+    <string name="statistic_day">Statistic day</string>
+    <string name="statistic_week">Statistic week</string>
+    <string name="statistic_month">Statistic month</string>
     <string name="choose_category">Выбор категории</string>
     <string name="costs">Costs</string>
     <string name="sign_out">Sign out</string>
     <string name="that_bought">That bought</string>
     <string name="unit_of_measurement">Unit of measurement</string>
+    <string name="count">Count</string>
+    <string name="cost">Cost</string>
 </resources>

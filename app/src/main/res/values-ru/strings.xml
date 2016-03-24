@@ -9,8 +9,10 @@
     <string name="statistic_week">Статистика за неделю</string>
     <string name="statistic_month">Статистика за месяц</string>
     <string name="choose_category">Выбор категории</string>
-    <string name="costs">Costs</string>
-    <string name="sign_out">Sign out</string>
+    <string name="costs">Расходы</string>
+    <string name="sign_out">Выйти</string>
     <string name="that_bought">Что куплено:</string>
     <string name="unit_of_measurement">Еденица измерения:</string>
+    <string name="count">Количество</string>
+    <string name="cost">Стоимость</string>
 </resources>

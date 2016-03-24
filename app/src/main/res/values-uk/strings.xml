@@ -13,4 +13,6 @@
     <string name="sign_out">Вийти</string>
     <string name="that_bought">Що куплено:</string>
     <string name="unit_of_measurement">Одиниця вимірювання:</string>
+    <string name="count">Кількість</string>
+    <string name="cost">Вартість</string>
 </resources>

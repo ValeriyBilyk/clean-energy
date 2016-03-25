@@ -21,7 +21,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
         android:layout_height="2dp"
-        android:background="@color/colorPrimary" />
+        android:background="@color/primary" />
 
     <EditText
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="68dp"
         android:layout_gravity="center"
-        android:background="@color/colorPrimary"
+        android:background="@color/primary"
         android:text="@string/sign_in"
         android:textColor="@color/white" />
 

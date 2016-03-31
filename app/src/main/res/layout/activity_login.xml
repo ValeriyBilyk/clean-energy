@@ -11,7 +11,7 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"
+        android:id="@+id/login"
         android:background="@null"
         android:hint="@string/hint_login"
         android:layout_gravity="center_horizontal" />
@@ -31,7 +31,7 @@
         android:background="@null"
         android:ems="10"
         android:maxLength="16"
-        android:id="@+id/editText2" />
+        android:id="@+id/password" />
 
     <Button
         android:id="@+id/btn_sign_in"

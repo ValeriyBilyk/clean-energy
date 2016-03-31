@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
+    useLibrary  'org.apache.http.legacy'
 
     defaultConfig {
         applicationId "com.example.advokat.cleanenergy"
@@ -27,4 +28,7 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'com.github.ganfra:material-spinner:1.1.1'
     compile 'com.wdullaer:materialdatetimepicker:2.3.0'
+    compile 'org.apache.httpcomponents:httpcore:4.4.1'
+    compile 'org.apache.httpcomponents:httpclient:4.5'
+    compile 'com.koushikdutta.ion:ion:2.+'
 }

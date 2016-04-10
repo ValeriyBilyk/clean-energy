@@ -41,7 +41,11 @@ public class ExpenditureAdapter extends RecyclerView.Adapter<ExpenditureAdapter.
     public void onBindViewHolder(final ExpenditureAdapter.ViewHolder holder, int position) {
         Expenditures expenditure = items.get(position);
         holder.textCategory.setText(String.valueOf(expenditure.getExpenditureTypesId().getName()));
-        holder.textTypeOfCost.setText(String.valueOf(expenditure.getCurrentAssetsTypeId().getName()));
+        if (expenditure.getCurrentAssetsTypeId() != null) {
+            holder.textTypeOfCost.setText(String.valueOf(expenditure.getCurrentAssetsTypeId().getName()));
+        } else {
+            holder.textTypeOfCost.setText(String.valueOf(expenditure.getComment()));
+        }
         holder.textPayer.setText(String.valueOf(expenditure.getPayer().getName()));
         holder.textCountAndDate.setText(String.format(Locale.getDefault(), "%.2f, %s, %s", expenditure.getAmount(), expenditure.getMeasureUnit().getName(), expenditure.getExpenditureDate()));
         holder.textDescription.setText(expenditure.getDescription());

@@ -26,9 +26,9 @@ public class DetailsActivity extends AppCompatActivity {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (changeCosts.isChecked()) {
+                        fixedCosts.setVisibility(View.VISIBLE);
                         volatileCosts.setVisibility(View.GONE);
-                    }
-                    if (!changeCosts.isChecked()) {
+                    } else {
                         fixedCosts.setVisibility(View.GONE);
                         volatileCosts.setVisibility(View.VISIBLE);
                     }

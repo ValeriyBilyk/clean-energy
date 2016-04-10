@@ -24,4 +24,5 @@
     <string name="name_purchase">Название расходов</string>
     <string name="constant">Постоянные</string>
     <string name="m_volatile">Непостоянные</string>
+    <string name="incorrect_login_or_password">Не правильный логин или пароль</string>
 </resources>

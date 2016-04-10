@@ -34,6 +34,7 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/that_bought_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
@@ -237,7 +238,7 @@
                         android:layout_alignParentTop="true"
                         android:background="@color/primary"
                         android:text="@string/send"
-                        android:textColor="@color/white" />
+                        android:textColor="#FFF" />
                 </RelativeLayout>
             </LinearLayout>
         </ScrollView>

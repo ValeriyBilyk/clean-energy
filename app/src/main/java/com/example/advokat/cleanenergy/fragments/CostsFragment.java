@@ -2,7 +2,7 @@ package com.example.advokat.cleanenergy.fragments;
 
 import android.app.ProgressDialog;
 import android.graphics.Color;
-import android.os.AsyncTask;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,35 +19,36 @@ import android.widget.TextView;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.adapters.DataAdapter;
+import com.example.advokat.cleanenergy.app.App;
+import com.example.advokat.cleanenergy.utils.ListUtil;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Calendar;
 
 public class CostsFragment extends Fragment implements AdapterView.OnItemSelectedListener, DatePickerDialog.OnDateSetListener {
 
     private ProgressDialog pDialog;
     private EditText dateEditText;
+    private TextView thatBoughtText;
     private ListView lview;
     private Spinner spinnerFixed;
     private Spinner spinnerVolatile;
+    private Spinner spinnerMeasurement;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+       /* pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(false);
+        pDialog.show();*/
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_costs, container, false);
-        //initListView(v);
+
         TabHost tabs = (TabHost) v.findViewById(android.R.id.tabhost);
 
         tabs.setup();
@@ -74,13 +75,13 @@ public class CostsFragment extends Fragment implements AdapterView.OnItemSelecte
         switch (tabs.getCurrentTab()) {
             case 0: {
                 spinnerFixed = (Spinner) v.findViewById(R.id.spinner_constant);
-                initSpinnerArrayAdapter(v, spinnerFixed, getDataFixedCosts());
+                //initSpinnerArrayAdapter(v, spinnerFixed, ListUtil.getCurrentAssetsTypeNames(App.getCurrentAsset().getCurrentAssetsType()));
                 spinnerFixed.setOnItemSelectedListener(this);
             }
 
             case 1: {
                 spinnerVolatile = (Spinner) v.findViewById(R.id.spinner_category_expenses);
-                initSpinnerArrayAdapter(v, spinnerVolatile, getDataVolatileCosts());
+             //   initSpinnerArrayAdapter(v, spinnerVolatile, ListUtil.getExpenditureTypesNames(App.getCurrentAsset().getExpenditureTypes()));
                 spinnerVolatile.setOnItemSelectedListener(this);
             }
         }
@@ -99,62 +100,18 @@ public class CostsFragment extends Fragment implements AdapterView.OnItemSelecte
             }
         });
 
-//        new BackgroundTask().execute(url);
+        spinnerMeasurement = (Spinner) v.findViewById(R.id.spinner_unit_of_measurement);
+        if (App.getCurrentAsset() != null) {
+            initSpinnerArrayAdapter(v, spinnerMeasurement, ListUtil.getMeasureNames(App.getCurrentAsset().getMeasureUnit()));
+        }
+        spinnerMeasurement.setOnItemSelectedListener(this);
+
+        thatBoughtText = (TextView) v.findViewById(R.id.that_bought_text);
+
+        Typeface typeface = Typeface.createFromAsset(getActivity().getAssets(), "font/Roboto-Light.ttf");
+        thatBoughtText.setTypeface(typeface);
+
         return v;
-    }
-
-    private class BackgroundTask extends AsyncTask<String, Void, Integer> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            pDialog = new ProgressDialog(getActivity().getApplicationContext());
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            InputStream inputStream = null;
-            Integer result = 0;
-            try {
-                /* create Apache HttpClient */
-                HttpClient httpclient = new DefaultHttpClient();
-
-                /* HttpGet Method */
-                HttpGet httpGet = new HttpGet(params[0]);
-
-                /* optional request header */
-                httpGet.setHeader("Content-Type", "application/json");
-
-                /* optional request header */
-                httpGet.setHeader("Accept", "application/json");
-
-                /* Make http request call */
-                HttpResponse httpResponse = httpclient.execute(httpGet);
-                int statusCode = httpResponse.getStatusLine().getStatusCode();
-
-                /* 200 represents HTTP OK */
-                if (statusCode ==  200) {
-                    /* receive response as inputStream */
-                    inputStream = httpResponse.getEntity().getContent();
-                    String response = convertInputStreamToString(inputStream);
-                    parseResult(response);
-                    result = 1; // Successful
-                } else{
-                    result = 0; //"Failed to fetch data!";
-                }
-            } catch (Exception e) {
-
-            }
-            return result; //"Failed to fetch data!";
-        }
-
-        @Override
-        protected void onPostExecute(Integer integer) {
-
-        }
     }
 
     private void initSpinnerArrayAdapter(View v, Spinner spinner, String[] dataAdapter) {
@@ -167,35 +124,6 @@ public class CostsFragment extends Fragment implements AdapterView.OnItemSelecte
     public void onDetach() {
         super.onDetach();
         getActivity().setTitle(R.string.app_name);
-    }
-
-    public void parseResult(String result) {
-        try{
-            JSONObject response = new JSONObject(result);
-            JSONArray posts = response.optJSONArray("posts");
-
-            for(int i=0; i< posts.length();i++ ){
-                JSONObject post = posts.optJSONObject(i);
-                String title = post.optString("title");
-            }
-        }catch (JSONException e){
-            e.printStackTrace();
-        }
-    }
-
-    public String convertInputStreamToString(InputStream inputStream) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-        String line = "";
-        String result = "";
-        while((line = bufferedReader.readLine()) != null){
-            result += line;
-        }
-
-            /* Close Stream */
-        if(null != inputStream){
-            inputStream.close();
-        }
-        return result;
     }
 
     private void initListView(View v) {
@@ -249,6 +177,8 @@ public class CostsFragment extends Fragment implements AdapterView.OnItemSelecte
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         ((TextView) parent.getChildAt(0)).setTextColor(Color.WHITE);
         ((TextView) parent.getChildAt(0)).setTextSize(18);
+        if (pDialog.isShowing())
+            pDialog.dismiss();
     }
 
     @Override
@@ -258,7 +188,7 @@ public class CostsFragment extends Fragment implements AdapterView.OnItemSelecte
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String date = dayOfMonth+"/"+(monthOfYear+1)+"/"+year;
+        String date = dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
         dateEditText.setText(date);
     }
 }

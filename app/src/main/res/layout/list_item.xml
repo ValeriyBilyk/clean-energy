@@ -12,7 +12,6 @@
         android:paddingTop="5dp"
         android:textAlignment="center"
         android:text="Транспорт"
-        android:textColor="@color/fontColor"
         android:textSize="25sp" />
 
 </LinearLayout>

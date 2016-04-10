@@ -38,6 +38,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="50dp"
         android:text="@string/sign_in"
-        android:textColor="@color/white" />
+        android:textColor="#FFF" />
 
 </RelativeLayout>

@@ -24,4 +24,5 @@
     <string name="name_purchase">Name purchase</string>
     <string name="constant">Fixed</string>
     <string name="m_volatile">Volatile</string>
+    <string name="incorrect_login_or_password">Incorrect login or password</string>
 </resources>

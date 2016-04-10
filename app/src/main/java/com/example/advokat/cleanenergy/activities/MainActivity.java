@@ -1,5 +1,6 @@
 package com.example.advokat.cleanenergy.activities;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -12,10 +13,18 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.fragments.CostsFragment;
+import com.example.advokat.cleanenergy.app.App;
+import com.example.advokat.cleanenergy.entities.CurrentAsset;
+import com.example.advokat.cleanenergy.fragments.ExpenditureFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticDayFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticMonthFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticWeekFragment;
+import com.example.advokat.cleanenergy.rest.ApiClient;
+import com.example.advokat.cleanenergy.rest.services.MainService;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,11 +32,33 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
+    private MainService mainService;
+    private ProgressDialog pDialog;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mainService = ApiClient.retrofit().getMainService();
+        mainService.getCurrentAsset().enqueue(new Callback<CurrentAsset>() {
+            @Override
+            public void onResponse(Call<CurrentAsset> call, Response<CurrentAsset> response) {
+                if (response.isSuccessful()) {
+                    App.setCurrentAsset(response.body());
+                    if (pDialog.isShowing())
+                        pDialog.dismiss();
+                    if (savedInstanceState == null) {
+                        navigationView.getMenu().performIdentifierAction(R.id.costs, 0);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CurrentAsset> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Initializing Toolbar and setting it as the actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -58,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //Replacing the main content with StatisticDayFragment Which is our Inbox View;
                     case R.id.costs:
-                        replaceFragment(new CostsFragment());
+                        replaceFragment(new ExpenditureFragment());
                         return true;
 
                     case R.id.statistic_item_day:
@@ -111,9 +142,10 @@ public class MainActivity extends AppCompatActivity {
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
 
-        if (savedInstanceState == null) {
-            navigationView.getMenu().performIdentifierAction(R.id.costs, 0);
-        }
+       /* pDialog = new ProgressDialog(MainActivity.this);
+        pDialog.setMessage("Please wait...");
+        pDialog.setCancelable(false);
+        pDialog.show();*/
 
     }
 

@@ -67,6 +67,7 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
             public void onResponse(Call<Cost> call, Response<Cost> response) {
                 if (response.isSuccessful()) {
                     adapter.addAll(response.body().getExpenditures());
+                    String h = "dfgdfgd";
                 } else {
                     try {
                         ApiClient.onError(response.errorBody().string(), getActivity());

@@ -147,6 +147,10 @@ public class MainActivity extends AppCompatActivity {
         pDialog.setCancelable(false);
         pDialog.show();*/
 
+        if (savedInstanceState == null) {
+            navigationView.getMenu().performIdentifierAction(R.id.costs, 0);
+        }
+
     }
 
     private void replaceFragment(Fragment fragment) {

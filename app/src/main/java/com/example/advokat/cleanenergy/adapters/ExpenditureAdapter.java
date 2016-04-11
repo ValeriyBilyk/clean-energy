@@ -55,7 +55,7 @@ public class ExpenditureAdapter extends RecyclerView.Adapter<ExpenditureAdapter.
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailsActivity.class);
                 intent.putExtra(Expenditures.class.getName(), items.get(holder.getAdapterPosition()));
-               // context.startActivity(intent);
+                context.startActivity(intent);
 
                 // TODO: 4/7/16 put into activity
 //                Expenditure expenditure = getIntent().getParcelableExtra(Expenditure.class.getName());

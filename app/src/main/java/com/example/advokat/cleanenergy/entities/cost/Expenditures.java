@@ -19,13 +19,18 @@ public class Expenditures implements Parcelable {
     private String comment;
     private Payer payer;
 
+
     protected Expenditures(Parcel in) {
         id = in.readLong();
+        expenditureTypesId = in.readParcelable(ExpenditureTypesId.class.getClassLoader());
+        currentAssetsTypeId = in.readParcelable(CurrentAssetsTypeId.class.getClassLoader());
         expenditureDate = in.readString();
-        amount = in.readLong();
+        amount = in.readDouble();
+        measureUnit = in.readParcelable(MeasureUnit.class.getClassLoader());
         money = in.readDouble();
         description = in.readString();
         comment = in.readString();
+        payer = in.readParcelable(Payer.class.getClassLoader());
     }
 
     public static final Creator<Expenditures> CREATOR = new Creator<Expenditures>() {
@@ -129,10 +134,14 @@ public class Expenditures implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(id);
+        dest.writeParcelable(expenditureTypesId, flags);
+        dest.writeParcelable(currentAssetsTypeId, flags);
         dest.writeString(expenditureDate);
         dest.writeDouble(amount);
+        dest.writeParcelable(measureUnit, flags);
         dest.writeDouble(money);
         dest.writeString(description);
         dest.writeString(comment);
+        dest.writeParcelable(payer, flags);
     }
 }

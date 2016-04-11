@@ -2,154 +2,164 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp"
-    android:paddingTop="8dp">
+    android:orientation="vertical">
 
-    <Switch
-        android:id="@+id/switch_cost"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="Постійні" />
+    <include
+        android:id="@+id/toolbar_activity_details"
+        layout="@layout/tool_bar" />
 
     <LinearLayout
-        android:id="@+id/fixed_costs"
+        android:padding="8dp"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
-        <TextView
+        <Switch
+            android:id="@+id/switch_cost"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Що куплено: " />
-
-        <Spinner
-            android:id="@+id/spinner_current_assets"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </Spinner>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/volatile_costs"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:orientation="vertical">
+            android:checked="true"
+            android:text="Постійні витрати" />
 
         <LinearLayout
+            android:id="@+id/fixed_costs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Категорія витрат: " />
+                android:text="Що куплено: " />
 
             <Spinner
-                android:id="@+id/spinner_expenditure"
+                android:id="@+id/spinner_current_assets"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
             </Spinner>
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/edit_text_name_of_cost"
+        <LinearLayout
+            android:id="@+id/volatile_costs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Назва витрати"
-            android:textSize="14sp" />
+            android:orientation="vertical"
+            android:visibility="gone">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Категорія витрат: " />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Одиниця вимірювання: " />
+                <Spinner
+                    android:id="@+id/spinner_expenditure"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <Spinner
-            android:id="@+id/unit_of_measurement"
+                </Spinner>
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/edit_text_name_of_cost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Назва витрати"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </Spinner>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/edit_text_amount"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Кількість"
-            android:textSize="14sp" />
+            android:layout_marginTop="16dp">
 
-        <EditText
-            android:id="@+id/edit_text_cost"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="Вартість"
-            android:textSize="14sp" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Одиниця вимірювання: " />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+            <Spinner
+                android:id="@+id/unit_of_measurement"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Платник: " />
+            </Spinner>
+        </LinearLayout>
 
-        <Spinner
-            android:id="@+id/spinner_payer"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        </Spinner>
+            <EditText
+                android:id="@+id/edit_text_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Кількість"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/edit_text_cost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Вартість"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Платник: " />
+
+            <Spinner
+                android:id="@+id/spinner_payer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </Spinner>
+        </LinearLayout>
+
+
+        <EditText
+            android:id="@+id/date_of_cost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Дата витрати"
+            android:inputType="date"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/edit_text_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Опис"
+            android:textSize="14sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/button_send_data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="16dp"
+                android:text="Відправити" />
+        </RelativeLayout>
+
     </LinearLayout>
 
-
-    <EditText
-        android:id="@+id/date_of_cost"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Дата витрати"
-        android:inputType="date"
-        android:textSize="14sp" />
-
-    <EditText
-        android:id="@+id/edit_text_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Опис"
-        android:textSize="14sp" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/button_send_data"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="16dp"
-            android:text="Відправить" />
-    </RelativeLayout>
 
 
 </LinearLayout>

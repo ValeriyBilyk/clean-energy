@@ -13,18 +13,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.app.App;
-import com.example.advokat.cleanenergy.entities.CurrentAsset;
 import com.example.advokat.cleanenergy.fragments.ExpenditureFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticDayFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticMonthFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticWeekFragment;
-import com.example.advokat.cleanenergy.rest.ApiClient;
 import com.example.advokat.cleanenergy.rest.services.MainService;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mainService = ApiClient.retrofit().getMainService();
+     /*   mainService = ApiClient.retrofit().getMainService();
         mainService.getCurrentAsset().enqueue(new Callback<CurrentAsset>() {
             @Override
             public void onResponse(Call<CurrentAsset> call, Response<CurrentAsset> response) {
@@ -58,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             public void onFailure(Call<CurrentAsset> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
         // Initializing Toolbar and setting it as the actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);

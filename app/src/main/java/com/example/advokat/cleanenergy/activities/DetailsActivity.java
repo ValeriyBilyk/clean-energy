@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -12,9 +13,16 @@ import android.widget.Spinner;
 import android.widget.Switch;
 
 import com.example.advokat.cleanenergy.R;
+import com.example.advokat.cleanenergy.app.App;
+import com.example.advokat.cleanenergy.entities.CurrentAssetsType;
 import com.example.advokat.cleanenergy.entities.cost.Expenditures;
+import com.example.advokat.cleanenergy.utils.ListUtil;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
-public class DetailsActivity extends AppCompatActivity {
+import java.util.Calendar;
+import java.util.List;
+
+public class DetailsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     private Spinner spinnerCurrentAssets;
     private Spinner spinnerExpenditure;
@@ -28,7 +36,6 @@ public class DetailsActivity extends AppCompatActivity {
     private LinearLayout fixedCosts;
     private LinearLayout volatileCosts;
     private Switch changeCosts;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,28 +65,39 @@ public class DetailsActivity extends AppCompatActivity {
         dateOfCost = (EditText) findViewById(R.id.date_of_cost);
         description = (EditText) findViewById(R.id.edit_text_description);
 
-        Expenditures expenditure = getIntent().getParcelableExtra(Expenditures.class.getName());
-        boolean isEditing = expenditure != null;
+        Expenditures expenditures = getIntent().getParcelableExtra(Expenditures.class.getName());
+        boolean isEditing = expenditures != null;
+
+        List<CurrentAssetsType> list = App.getCurrentAsset().getCurrentAssetsType();
 
         if (isEditing) {
             setTitle("Редагувати");
-            if (expenditure.getCurrentAssetsTypeId() != null) {
+            if (expenditures.getCurrentAssetsTypeId() != null) {
                 changeCosts.setChecked(true);
-               /* ArrayAdapter<String> adapter;
-                String item = expenditure.getCurrentAssetsTypeId().getName();
-                adapter = new ArrayAdapter<String>(getApplicationContext(),
-                        android.R.layout.simple_spinner_item, Integer.parseInt(item));
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinnerCurrentAssets.setAdapter(adapter);*/
+                initSpinnerArrayAdapter(spinnerCurrentAssets, ListUtil.getCurrentAssetsTypeNames(App.getCurrentAsset().getCurrentAssetsType()));
             } else {
                 changeCosts.setChecked(false);
             }
             verifyChangeCosts();
-            amount.setText(String.valueOf(expenditure.getAmount()));
-            cost.setText(String.valueOf(expenditure.getMoney()));
-            dateOfCost.setText(String.valueOf(expenditure.getExpenditureDate()));
-            description.setText(String.valueOf(expenditure.getDescription()));
+            amount.setText(String.valueOf(expenditures.getAmount()));
+            cost.setText(String.valueOf(expenditures.getMoney()));
+            dateOfCost.setText(String.valueOf(expenditures.getExpenditureDate()));
+            description.setText(String.valueOf(expenditures.getDescription()));
         }
+
+        dateOfCost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        DetailsActivity.this,
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH)
+                );
+                dpd.show(getFragmentManager(), "Datepickerdialog");
+            }
+        });
 
         if ((changeCosts != null) && (volatileCosts != null) && (fixedCosts != null)) {
             changeCosts.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -92,7 +110,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
-    public void verifyChangeCosts() {
+    private void verifyChangeCosts() {
         if (changeCosts.isChecked()) {
             fixedCosts.setVisibility(View.VISIBLE);
             volatileCosts.setVisibility(View.GONE);
@@ -113,5 +131,23 @@ public class DetailsActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void initSpinnerArrayAdapter(Spinner spinner, String[] dataAdapter) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, dataAdapter);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        String month = "";
+        if (String.valueOf(monthOfYear).length() < 2) {
+            month = "0" + (monthOfYear + 1);
+        } else {
+            month = String.valueOf((monthOfYear + 1));
+        }
+        String date = year + "-" + month + "-" + dayOfMonth;
+        dateOfCost.setText(date);
     }
 }

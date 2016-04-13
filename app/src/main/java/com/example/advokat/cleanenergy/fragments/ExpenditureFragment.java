@@ -17,6 +17,7 @@ import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DetailsActivity;
 import com.example.advokat.cleanenergy.adapters.ExpenditureAdapter;
 import com.example.advokat.cleanenergy.app.App;
+import com.example.advokat.cleanenergy.entities.CurrentAsset;
 import com.example.advokat.cleanenergy.entities.cost.Cost;
 import com.example.advokat.cleanenergy.rest.ApiClient;
 import com.example.advokat.cleanenergy.rest.requests.AuthRequest;
@@ -42,6 +43,9 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+        getActivity().setTitle("Витрати");
+
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
@@ -58,6 +62,8 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
         recyclerView.setAdapter(adapter);
 
         loadItems();
+        loadCategoryItems();
+        String m = "asdfs";
     }
 
     private void loadItems() {
@@ -67,7 +73,6 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
             public void onResponse(Call<Cost> call, Response<Cost> response) {
                 if (response.isSuccessful()) {
                     adapter.addAll(response.body().getExpenditures());
-                    String h = "dfgdfgd";
                 } else {
                     try {
                         ApiClient.onError(response.errorBody().string(), getActivity());
@@ -87,6 +92,33 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
             }
         });
 
+    }
+
+    private void loadCategoryItems() {
+        progressBar.setVisibility(View.VISIBLE);
+        ApiClient.retrofit().getMainService().getCurrentAsset().enqueue(new Callback<CurrentAsset>() {
+            @Override
+            public void onResponse(Call<CurrentAsset> call, Response<CurrentAsset> response) {
+                if (response.isSuccessful()) {
+                    App.setCurrentAsset(response.body());
+                } else {
+                    try {
+                        ApiClient.onError(response.errorBody().string(), getActivity());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                swipeRefreshLayout.setRefreshing(false);
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<CurrentAsset> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
+                progressBar.setVisibility(View.GONE);
+                ApiClient.onError(t.getMessage(), getActivity());
+            }
+        });
     }
 
     @Override

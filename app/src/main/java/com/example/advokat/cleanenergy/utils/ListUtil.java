@@ -3,6 +3,7 @@ package com.example.advokat.cleanenergy.utils;
 import com.example.advokat.cleanenergy.entities.CurrentAssetsType;
 import com.example.advokat.cleanenergy.entities.ExpenditureTypes;
 import com.example.advokat.cleanenergy.entities.MeasureUnit;
+import com.example.advokat.cleanenergy.entities.Payer;
 
 import java.util.List;
 
@@ -39,6 +40,17 @@ public class ListUtil {
             i++;
         }
         return expenditureNames;
+    }
+
+    public static String[] getPayers(List<Payer> list) {
+        int listLength = list.size();
+        String payerNames[] = new String[listLength];
+        int i = 0;
+        for (Payer item: list) {
+            payerNames[i] = item.getName();
+            i++;
+        }
+        return payerNames;
     }
 
 }

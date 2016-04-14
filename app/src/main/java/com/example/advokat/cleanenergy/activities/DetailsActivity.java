@@ -51,7 +51,7 @@ public class DetailsActivity extends AppCompatActivity implements DatePickerDial
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details);
+        setContentView(R.layout.activity_send_cost);
 
         setTitle("Додати");
 

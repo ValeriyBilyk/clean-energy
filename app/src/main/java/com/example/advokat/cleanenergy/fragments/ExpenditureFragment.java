@@ -63,7 +63,6 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
 
         loadItems();
         loadCategoryItems();
-        String m = "asdfs";
     }
 
     private void loadItems() {

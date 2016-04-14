@@ -1,6 +1,7 @@
 package com.example.advokat.cleanenergy.activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
+import com.example.advokat.cleanenergy.app.App;
 import com.example.advokat.cleanenergy.fragments.ExpenditureFragment;
+import com.example.advokat.cleanenergy.fragments.IncomeFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticDayFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticMonthFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticWeekFragment;
@@ -32,26 +35,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-     /*   mainService = ApiClient.retrofit().getMainService();
-        mainService.getCurrentAsset().enqueue(new Callback<CurrentAsset>() {
-            @Override
-            public void onResponse(Call<CurrentAsset> call, Response<CurrentAsset> response) {
-                if (response.isSuccessful()) {
-                    App.setCurrentAsset(response.body());
-                    if (pDialog.isShowing())
-                        pDialog.dismiss();
-                    if (savedInstanceState == null) {
-                        navigationView.getMenu().performIdentifierAction(R.id.costs, 0);
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CurrentAsset> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });*/
 
         // Initializing Toolbar and setting it as the actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -85,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(new ExpenditureFragment());
                         return true;
 
+                    case R.id.income:
+                        replaceFragment(new IncomeFragment());
+                        return true;
+
                     case R.id.statistic_item_day:
                         replaceFragment(new StatisticDayFragment());
                         return true;
@@ -100,7 +87,9 @@ public class MainActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.exit:
-                        Toast.makeText(getApplicationContext(), "Logout", Toast.LENGTH_SHORT).show();
+                        App.getUser().setKey(null);
+                        Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
+                        startActivity(intent);
                         return true;
 
                     default:

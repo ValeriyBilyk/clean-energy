@@ -22,19 +22,15 @@
         android:checkableBehavior="single">
 
         <item
-            android:id="@+id/statistic_item_day"
+            android:id="@+id/statistic_cost"
             android:checked="false"
-            android:title="@string/statistic_day" />
+            android:title="Статистика витрат" />
 
         <item
-            android:id="@+id/statistic_item_week"
+            android:id="@+id/statistic_income"
             android:checked="false"
-            android:title="@string/statistic_week" />
+            android:title="Статистика доходів" />
 
-        <item
-            android:id="@+id/statistic_item_month"
-            android:checked="false"
-            android:title="@string/statistic_month" />
     </group>
 
     <group

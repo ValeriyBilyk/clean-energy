@@ -18,8 +18,8 @@ public interface MainService {
     @POST("user/api/login")
     Call<User> login(@Query("username") String username, @Query("password") String password);
 
-    @GET("types/info/currentAsset")
-    Call<CurrentAsset> getCurrentAsset();
+    @GET("user/api/currentAsset")
+    Call<CurrentAsset> getCurrentAsset(@Query("accessKey") String accessKey);
 
     @POST("user/api/getAllExpenditures")
     Call<Cost> getAllCosts(@Body AuthRequest authRequest);
@@ -27,12 +27,12 @@ public interface MainService {
     @Headers({
             "Content-Type: application/json"
     })
-    @POST("user/api/expenditure/constant")
+    @POST("user/api/expenditure/add/constant")
     Call<Integer> sendDataConstant(@Body DataRequest dataRequest);
 
     @Headers({
             "Content-Type: application/json"
     })
-    @POST("user/api/expenditure/notParmenent")
+    @POST("user/api/expenditure/add/notParmenent")
     Call<Integer> sendDataParmenent(@Body DataRequest dataRequest);
 }

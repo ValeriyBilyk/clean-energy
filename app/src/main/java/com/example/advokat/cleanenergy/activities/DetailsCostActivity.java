@@ -18,7 +18,10 @@ import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.app.App;
 import com.example.advokat.cleanenergy.entities.AccessKeyDto;
 import com.example.advokat.cleanenergy.entities.CurrentAssetsType;
+import com.example.advokat.cleanenergy.entities.ExpenditureTypes;
 import com.example.advokat.cleanenergy.entities.ExpendituresDTO;
+import com.example.advokat.cleanenergy.entities.MeasureUnit;
+import com.example.advokat.cleanenergy.entities.Payer;
 import com.example.advokat.cleanenergy.entities.cost.Expenditures;
 import com.example.advokat.cleanenergy.rest.ApiClient;
 import com.example.advokat.cleanenergy.rest.requests.DataRequest;
@@ -26,13 +29,15 @@ import com.example.advokat.cleanenergy.utils.ListUtil;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailsActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
+public class DetailsCostActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
 
     private Spinner spinnerCurrentAssets;
     private Spinner spinnerExpenditure;
@@ -48,58 +53,58 @@ public class DetailsActivity extends AppCompatActivity implements DatePickerDial
     private Switch changeCosts;
     private Button btnSendData;
 
+    private Map<String, Integer> mapCurrentAssets;
+    private Map<Long, Long> mapCurrentAssetsId;
+
+    private Map<String, Integer> mapExpenditure;
+    private Map<Long, Long> mapExpenditureId;
+
+    private Map<String, Integer> mapMeasureUnit;
+    private Map<Long, Long> mapMeasureUnitId;
+
+    private Map<String, Integer> mapPayer;
+    private Map<Long, Long> mapPayerId;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_cost);
 
         setTitle("Додати");
+        initLayout();
+        initSpinners();
+        createCurrentAssetsMap();
+        createExpenditureMap();
+        createMeasureUnit();
+        createPayerMap();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_activity_details);
-        setSupportActionBar(toolbar);
+        Map<String, Integer> mapExpenditure = new HashMap<>();
+        Iterator<ExpenditureTypes> iterator1 = App.getCurrentAsset().getExpenditureTypes().iterator();
+        int j = 0;
+        while (iterator1.hasNext()) {
+            mapExpenditure.put(iterator1.next().getName(), j);
+            j++;
+        }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        fixedCosts = (LinearLayout) findViewById(R.id.fixed_costs);
-        volatileCosts = (LinearLayout) findViewById(R.id.volatile_costs);
-
-        changeCosts = (Switch) findViewById(R.id.switch_cost);
-
-        spinnerCurrentAssets = (Spinner) findViewById(R.id.spinner_current_assets);
-        spinnerExpenditure = (Spinner) findViewById(R.id.spinner_expenditure);
-        nameOfCost = (EditText) findViewById(R.id.edit_text_name_of_cost);
-        unitOfMeasurement = (Spinner) findViewById(R.id.unit_of_measurement);
-        amount = (EditText) findViewById(R.id.edit_text_amount);
-        cost = (EditText) findViewById(R.id.edit_text_cost);
-        payer = (Spinner) findViewById(R.id.spinner_payer);
-        dateOfCost = (EditText) findViewById(R.id.date_of_cost);
-        description = (EditText) findViewById(R.id.edit_text_description);
-        btnSendData = (Button) findViewById(R.id.button_send_data);
 
         Expenditures expenditures = getIntent().getParcelableExtra(Expenditures.class.getName());
         boolean isEditing = expenditures != null;
-
-        initSpinnerArrayAdapter(spinnerCurrentAssets, ListUtil.getCurrentAssetsTypeNames(App.getCurrentAsset().getCurrentAssetsType()));
-        initSpinnerArrayAdapter(spinnerExpenditure, ListUtil.getExpenditureTypesNames(App.getCurrentAsset().getExpenditureTypes()));
-        initSpinnerArrayAdapter(unitOfMeasurement, ListUtil.getMeasureNames(App.getCurrentAsset().getMeasureUnit()));
-        initSpinnerArrayAdapter(payer, ListUtil.getPayers(App.getCurrentAsset().getPayer()));
-
-        List<CurrentAssetsType> list = App.getCurrentAsset().getCurrentAssetsType();
 
         if (isEditing) {
             setTitle("Редагувати");
             if (expenditures.getCurrentAssetsTypeId() != null) {
                 changeCosts.setChecked(true);
-                spinnerCurrentAssets.setSelection((int) (expenditures.getCurrentAssetsTypeId().getId() - 1));
+                spinnerCurrentAssets.setSelection(mapCurrentAssets.get(expenditures.getCurrentAssetsTypeId().getName()));
             } else {
                 changeCosts.setChecked(false);
                 nameOfCost.setText(String.valueOf(expenditures.getComment()));
-                spinnerExpenditure.setSelection((int) (expenditures.getExpenditureTypesId().getId() - 1));
+                spinnerExpenditure.setSelection(mapExpenditure.get(expenditures.getExpenditureTypesId().getName()));
             }
             verifyChangeCosts();
             unitOfMeasurement.setSelection((int) (expenditures.getMeasureUnit().getId() - 1));
-            payer.setSelection((int) (expenditures.getPayer().getId() - 1));
+            payer.setSelection(mapPayer.get(expenditures.getPayer().getName()));
             amount.setText(String.valueOf(expenditures.getAmount()));
             cost.setText(String.valueOf(expenditures.getMoney()));
             dateOfCost.setText(String.valueOf(expenditures.getExpenditureDate()));
@@ -112,7 +117,7 @@ public class DetailsActivity extends AppCompatActivity implements DatePickerDial
             public void onClick(View v) {
                 Calendar now = Calendar.getInstance();
                 DatePickerDialog dpd = DatePickerDialog.newInstance(
-                        DetailsActivity.this,
+                        DetailsCostActivity.this,
                         now.get(Calendar.YEAR),
                         now.get(Calendar.MONTH),
                         now.get(Calendar.DAY_OF_MONTH)
@@ -161,6 +166,87 @@ public class DetailsActivity extends AppCompatActivity implements DatePickerDial
         spinner.setAdapter(adapter);
     }
 
+    private void createCurrentAssetsMap() {
+        mapCurrentAssets = new HashMap<>();
+        mapCurrentAssetsId = new HashMap<>();
+        Iterator<CurrentAssetsType> iterator = App.getCurrentAsset().getCurrentAssetsType().iterator();
+        long i = 0;
+        while (iterator.hasNext()) {
+            CurrentAssetsType currentAssetsType = iterator.next();
+            mapCurrentAssets.put(currentAssetsType.getName(), (int) i);
+            mapCurrentAssetsId.put(i, currentAssetsType.getId());
+            i++;
+        }
+    }
+
+    private void createPayerMap() {
+        mapPayer = new HashMap<>();
+        mapPayerId = new HashMap<>();
+        Iterator<Payer> iterator2 = App.getCurrentAsset().getPayer().iterator();
+        long k = 0;
+        while (iterator2.hasNext()) {
+            Payer payer = iterator2.next();
+            mapPayer.put(payer.getName(), (int) k);
+            mapPayerId.put(k, payer.getId());
+            k++;
+        }
+    }
+
+    private void createExpenditureMap() {
+        mapExpenditure = new HashMap<>();
+        mapExpenditureId = new HashMap<>();
+        Iterator<ExpenditureTypes> iterator = App.getCurrentAsset().getExpenditureTypes().iterator();
+        long m = 0;
+        while (iterator.hasNext()) {
+            ExpenditureTypes expenditureTypes = iterator.next();
+            mapExpenditure.put(expenditureTypes.getName(), (int) m);
+            mapExpenditureId.put(m, expenditureTypes.getId());
+            m++;
+        }
+    }
+
+    private void createMeasureUnit() {
+        mapMeasureUnit = new HashMap<>();
+        mapMeasureUnitId = new HashMap<>();
+        Iterator<MeasureUnit> iterator = App.getCurrentAsset().getMeasureUnit().iterator();
+        long g = 0;
+        while (iterator.hasNext()) {
+            MeasureUnit measureUnit = iterator.next();
+            mapMeasureUnit.put(measureUnit.getName(), (int) g);
+            mapMeasureUnitId.put(g, measureUnit.getId());
+            g++;
+        }
+    }
+
+    private void initSpinners() {
+        initSpinnerArrayAdapter(spinnerCurrentAssets, ListUtil.getCurrentAssetsTypeNames(App.getCurrentAsset().getCurrentAssetsType()));
+        initSpinnerArrayAdapter(spinnerExpenditure, ListUtil.getExpenditureTypesNames(App.getCurrentAsset().getExpenditureTypes()));
+        initSpinnerArrayAdapter(unitOfMeasurement, ListUtil.getMeasureNames(App.getCurrentAsset().getMeasureUnit()));
+        initSpinnerArrayAdapter(payer, ListUtil.getPayers(App.getCurrentAsset().getPayer()));
+    }
+
+    private void initLayout() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_activity_details);
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        fixedCosts = (LinearLayout) findViewById(R.id.fixed_costs);
+        volatileCosts = (LinearLayout) findViewById(R.id.volatile_costs);
+        changeCosts = (Switch) findViewById(R.id.switch_cost);
+        spinnerCurrentAssets = (Spinner) findViewById(R.id.spinner_current_assets);
+        spinnerExpenditure = (Spinner) findViewById(R.id.spinner_expenditure);
+        nameOfCost = (EditText) findViewById(R.id.edit_text_name_of_cost);
+        unitOfMeasurement = (Spinner) findViewById(R.id.unit_of_measurement);
+        amount = (EditText) findViewById(R.id.edit_text_amount);
+        cost = (EditText) findViewById(R.id.edit_text_cost);
+        payer = (Spinner) findViewById(R.id.spinner_payer);
+        dateOfCost = (EditText) findViewById(R.id.date_of_cost);
+        description = (EditText) findViewById(R.id.edit_text_description);
+        btnSendData = (Button) findViewById(R.id.button_send_data);
+    }
+
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         String month = "";
@@ -187,22 +273,22 @@ public class DetailsActivity extends AppCompatActivity implements DatePickerDial
                 ExpendituresDTO expendituresDTO;
                 if (changeCosts.isChecked()) {
                     expendituresDTO = new ExpendituresDTO(
-                            spinnerCurrentAssets.getSelectedItemId() + 1,
-                            unitOfMeasurement.getSelectedItemId() + 1,
+                            mapCurrentAssetsId.get(spinnerCurrentAssets.getSelectedItemId()),
+                            mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
                             Double.parseDouble(String.valueOf(amount.getText())),
                             Double.parseDouble(String.valueOf(cost.getText())),
-                            payer.getSelectedItemId() + 1,
+                            mapPayerId.get(payer.getSelectedItemId()),
                             description.getText().toString(),
                             dateOfCost.getText().toString()
                     );
                 } else {
                     expendituresDTO = new ExpendituresDTO(
-                            unitOfMeasurement.getSelectedItemId() + 1,
+                            mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
                             Double.parseDouble(String.valueOf(amount.getText())),
                             Double.parseDouble(String.valueOf(cost.getText())),
-                            payer.getSelectedItemId() + 1,
+                            mapPayerId.get(payer.getSelectedItemId()),
                             description.getText().toString(),
-                            spinnerExpenditure.getSelectedItemId() + 1,
+                            mapExpenditureId.get(spinnerExpenditure.getSelectedItemId()),
                             nameOfCost.getText().toString(),
                             dateOfCost.getText().toString()
                     );
@@ -215,13 +301,13 @@ public class DetailsActivity extends AppCompatActivity implements DatePickerDial
                         @Override
                         public void onResponse(Call<Integer> call, Response<Integer> response) {
                             if (response.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(), "1 - constant", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Integer> call, Throwable t) {
-
+                            Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
                         }
                     });
                 } else {
@@ -231,13 +317,13 @@ public class DetailsActivity extends AppCompatActivity implements DatePickerDial
                             if (response.isSuccessful()) {
                                 response.body();
                                 response.code();
-                                Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Integer> call, Throwable t) {
-
+                            Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }

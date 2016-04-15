@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <include
-        android:id="@+id/toolbar_activity_details"
+        android:id="@+id/toolbar_activity_income"
         layout="@layout/tool_bar" />
 
     <ScrollView

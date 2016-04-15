@@ -5,12 +5,14 @@ import android.content.Context;
 
 import com.example.advokat.cleanenergy.entities.CurrentAsset;
 import com.example.advokat.cleanenergy.entities.User;
+import com.example.advokat.cleanenergy.entities.cost.Cost;
 
 public class App extends Application {
 
     private static Context context;
     private static User user;
     private static CurrentAsset currentAsset;
+    private static Cost cost;
 
     @Override
     public void onCreate() {
@@ -36,5 +38,13 @@ public class App extends Application {
 
     public static void setCurrentAsset(CurrentAsset currentAsset) {
         App.currentAsset = currentAsset;
+    }
+
+    public static Cost getCost() {
+        return cost;
+    }
+
+    public static void setCost(Cost cost) {
+        App.cost = cost;
     }
 }

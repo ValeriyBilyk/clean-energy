@@ -9,11 +9,11 @@ import android.view.ViewGroup;
 
 import com.example.advokat.cleanenergy.R;
 
-public class StatisticWeekFragment extends Fragment {
+public class StatisticIncomeFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_statistic_week, container, false);
+        return inflater.inflate(R.layout.fragment_statistic_income, container, false);
     }
 }

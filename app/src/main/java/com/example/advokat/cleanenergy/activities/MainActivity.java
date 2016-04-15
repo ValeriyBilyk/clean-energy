@@ -17,9 +17,8 @@ import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.app.App;
 import com.example.advokat.cleanenergy.fragments.ExpenditureFragment;
 import com.example.advokat.cleanenergy.fragments.IncomeFragment;
-import com.example.advokat.cleanenergy.fragments.StatisticDayFragment;
-import com.example.advokat.cleanenergy.fragments.StatisticMonthFragment;
-import com.example.advokat.cleanenergy.fragments.StatisticWeekFragment;
+import com.example.advokat.cleanenergy.fragments.StatisticExpenditureFragment;
+import com.example.advokat.cleanenergy.fragments.StatisticIncomeFragment;
 import com.example.advokat.cleanenergy.rest.services.MainService;
 
 public class MainActivity extends AppCompatActivity {
@@ -63,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()) {
 
-                    //Replacing the main content with StatisticDayFragment Which is our Inbox View;
+                    //Replacing the main content with StatisticExpenditureFragment Which is our Inbox View;
                     case R.id.costs:
                         replaceFragment(new ExpenditureFragment());
                         return true;
@@ -72,18 +71,14 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(new IncomeFragment());
                         return true;
 
-                    case R.id.statistic_item_day:
-                        replaceFragment(new StatisticDayFragment());
+                    case R.id.statistic_cost:
+                        replaceFragment(new StatisticExpenditureFragment());
                         return true;
 
                     // For rest of the options we just show a toast on click
 
-                    case R.id.statistic_item_week:
-                        replaceFragment(new StatisticWeekFragment());
-                        return true;
-
-                    case R.id.statistic_item_month:
-                        replaceFragment(new StatisticMonthFragment());
+                    case R.id.statistic_income:
+                        replaceFragment(new StatisticIncomeFragment());
                         return true;
 
                     case R.id.exit:

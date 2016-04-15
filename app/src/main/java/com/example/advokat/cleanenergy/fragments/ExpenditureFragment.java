@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.activities.DetailsActivity;
+import com.example.advokat.cleanenergy.activities.DetailsCostActivity;
 import com.example.advokat.cleanenergy.adapters.ExpenditureAdapter;
 import com.example.advokat.cleanenergy.app.App;
 import com.example.advokat.cleanenergy.entities.CurrentAsset;
@@ -71,6 +71,7 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
             @Override
             public void onResponse(Call<Cost> call, Response<Cost> response) {
                 if (response.isSuccessful()) {
+                    App.setCost(response.body());
                     adapter.addAll(response.body().getExpenditures());
                 } else {
                     try {
@@ -95,7 +96,7 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
 
     private void loadCategoryItems() {
         progressBar.setVisibility(View.VISIBLE);
-        ApiClient.retrofit().getMainService().getCurrentAsset().enqueue(new Callback<CurrentAsset>() {
+        ApiClient.retrofit().getMainService().getCurrentAsset(App.getUser().getKey()).enqueue(new Callback<CurrentAsset>() {
             @Override
             public void onResponse(Call<CurrentAsset> call, Response<CurrentAsset> response) {
                 if (response.isSuccessful()) {
@@ -129,7 +130,7 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab_add_data:
-                Intent intent = new Intent(getContext(), DetailsActivity.class);
+                Intent intent = new Intent(getContext(), DetailsCostActivity.class);
                 startActivity(intent);
         }
     }

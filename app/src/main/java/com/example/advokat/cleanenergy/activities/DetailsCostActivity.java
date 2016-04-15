@@ -1,5 +1,6 @@
 package com.example.advokat.cleanenergy.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -306,6 +307,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                             @Override
                             public void onResponse(Call<Integer> call, Response<Integer> response) {
                                 if (response.isSuccessful()) {
+                                    goToMainActivity();
                                     Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -320,6 +322,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                             @Override
                             public void onResponse(Call<Integer> call, Response<Integer> response) {
                                 if (response.isSuccessful()) {
+                                    goToMainActivity();
                                     Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -363,6 +366,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                             @Override
                             public void onResponse(Call<Integer> call, Response<Integer> response) {
                                 if (response.isSuccessful()) {
+                                    goToMainActivity();
                                     Toast.makeText(getApplicationContext(), "Успіх", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
@@ -379,6 +383,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                             @Override
                             public void onResponse(Call<Integer> call, Response<Integer> response) {
                                 if (response.isSuccessful()) {
+                                    goToMainActivity();
                                     Toast.makeText(getApplicationContext(), "Успіх", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
@@ -394,5 +399,10 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                 }
                 break;
         }
+    }
+
+    private void goToMainActivity() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
     }
 }

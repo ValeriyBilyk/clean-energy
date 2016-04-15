@@ -41,29 +41,6 @@ public class StatisticCostAdapter extends RecyclerView.Adapter<StatisticCostAdap
         holder.textTotalCost.setText(String.valueOf(sumMoney.getMoney()));
     }
 
-    /*//@Override
-    public void onBindViewHolder(final ExpenditureAdapter.ViewHolder holder, int position) {
-        Expenditures expenditure = items.get(position);
-        holder.textCategory.setText(String.valueOf(expenditure.getExpenditureTypesId().getName()));
-        if (expenditure.getCurrentAssetsTypeId() != null) {
-            holder.textTypeOfCost.setText(String.valueOf(expenditure.getCurrentAssetsTypeId().getName()));
-        } else {
-            holder.textTypeOfCost.setText(String.valueOf(expenditure.getComment()));
-        }
-        holder.textPayer.setText(String.valueOf(expenditure.getPayer().getName()));
-        holder.textCountAndDate.setText(String.format(Locale.getDefault(), "%.2f, %s, %s", expenditure.getAmount(), expenditure.getMeasureUnit().getName(), expenditure.getExpenditureDate()));
-        holder.textDescription.setText(expenditure.getDescription());
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, DetailsCostActivity.class);
-                intent.putExtra(Expenditures.class.getName(), items.get(holder.getAdapterPosition()));
-                context.startActivity(intent);
-            }
-        });
-    }*/
-
     @Override
     public int getItemCount() {
         return items.size();

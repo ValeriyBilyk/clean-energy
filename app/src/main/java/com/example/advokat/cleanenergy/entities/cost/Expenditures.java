@@ -6,7 +6,8 @@ import android.os.Parcelable;
 import com.example.advokat.cleanenergy.entities.MeasureUnit;
 import com.example.advokat.cleanenergy.entities.Payer;
 
-public class Expenditures implements Parcelable {
+public class Expenditures implements Parcelable
+{
 
     private long id;
     private ExpenditureTypesId expenditureTypesId;

@@ -15,6 +15,13 @@ import android.widget.ProgressBar;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DetailsIncomeActivity;
+import com.example.advokat.cleanenergy.app.App;
+import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
+import com.example.advokat.cleanenergy.rest.ApiClient;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class IncomeFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -45,6 +52,22 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
 
         fabAddData = (FloatingActionButton) view.findViewById(R.id.fab_add_data);
         fabAddData.setOnClickListener(this);
+    }
+
+    private void loadCategoryItems() {
+        progressBar.setVisibility(View.VISIBLE);
+        ApiClient.retrofit().getMainService().getAllIncome(App.getUser().getKey())
+                .enqueue(new Callback<IncomeCategory>() {
+                    @Override
+                    public void onResponse(Call<IncomeCategory> call, Response<IncomeCategory> response) {
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<IncomeCategory> call, Throwable t) {
+
+                    }
+                });
     }
 
     @Override

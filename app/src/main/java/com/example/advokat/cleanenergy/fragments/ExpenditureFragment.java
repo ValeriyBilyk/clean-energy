@@ -9,6 +9,9 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -45,6 +48,8 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
         getActivity().setTitle("Витрати");
+
+        setHasOptionsMenu(true);
 
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
 
@@ -133,5 +138,20 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
                 Intent intent = new Intent(getContext(), DetailsCostActivity.class);
                 startActivity(intent);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_expenditure, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_sort_by_date:
+                adapter.sortByDate();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -3,9 +3,11 @@ package com.example.advokat.cleanenergy.rest.services;
 import com.example.advokat.cleanenergy.entities.CurrentAsset;
 import com.example.advokat.cleanenergy.entities.User;
 import com.example.advokat.cleanenergy.entities.cost.Cost;
+import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
 import com.example.advokat.cleanenergy.rest.requests.AuthRequest;
 import com.example.advokat.cleanenergy.rest.requests.DataRequest;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -41,4 +43,10 @@ public interface MainService {
 
     @POST("user/api/expenditure/edit/notParmenent")
     Call<Integer> editNotParmenent(@Body DataRequest dataRequest);
+
+    @GET("user/api/income/types")
+    Call<IncomeCategory> getAllIncome(@Query("accessKey") String accessKey);
+
+
+    Call<ResponseBody> deleteIncome(long id);
 }

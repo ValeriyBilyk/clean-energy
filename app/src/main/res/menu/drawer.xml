@@ -11,7 +11,7 @@
             android:title="@string/costs" />
 
         <item
-            android:id="@+id/incomeCategory"
+            android:id="@+id/income"
             android:checked="false"
             android:title="Доходи" />
 

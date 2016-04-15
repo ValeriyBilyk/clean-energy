@@ -4,6 +4,7 @@ import com.example.advokat.cleanenergy.entities.CurrentAsset;
 import com.example.advokat.cleanenergy.entities.User;
 import com.example.advokat.cleanenergy.entities.cost.Cost;
 import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
+import com.example.advokat.cleanenergy.entities.income.Incomes;
 import com.example.advokat.cleanenergy.rest.requests.AuthRequest;
 import com.example.advokat.cleanenergy.rest.requests.DataRequest;
 
@@ -45,8 +46,10 @@ public interface MainService {
     Call<Integer> editNotParmenent(@Body DataRequest dataRequest);
 
     @GET("user/api/income/types")
-    Call<IncomeCategory> getAllIncome(@Query("accessKey") String accessKey);
+    Call<IncomeCategory> getAllIncomeCategory(@Query("accessKey") String accessKey);
 
+    @GET("user/api/income/get/all")
+    Call<Incomes> getAllIncomes(@Query("accessKey") String accessKey);
 
     Call<ResponseBody> deleteIncome(long id);
 }

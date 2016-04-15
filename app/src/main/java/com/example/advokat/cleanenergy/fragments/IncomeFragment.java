@@ -15,8 +15,10 @@ import android.widget.ProgressBar;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DetailsIncomeActivity;
+import com.example.advokat.cleanenergy.adapters.IncomeAdapter;
 import com.example.advokat.cleanenergy.app.App;
 import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
+import com.example.advokat.cleanenergy.entities.income.Incomes;
 import com.example.advokat.cleanenergy.rest.ApiClient;
 
 import retrofit2.Call;
@@ -26,6 +28,7 @@ import retrofit2.Response;
 public class IncomeFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private ProgressBar progressBar;
+    private IncomeAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton fabAddData;
 
@@ -50,13 +53,18 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+        adapter = new IncomeAdapter();
+        recyclerView.setAdapter(adapter);
+
         fabAddData = (FloatingActionButton) view.findViewById(R.id.fab_add_data);
         fabAddData.setOnClickListener(this);
+
+        loadItems();
     }
 
     private void loadCategoryItems() {
         progressBar.setVisibility(View.VISIBLE);
-        ApiClient.retrofit().getMainService().getAllIncome(App.getUser().getKey())
+        ApiClient.retrofit().getMainService().getAllIncomeCategory(App.getUser().getKey())
                 .enqueue(new Callback<IncomeCategory>() {
                     @Override
                     public void onResponse(Call<IncomeCategory> call, Response<IncomeCategory> response) {
@@ -70,6 +78,30 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
                 });
     }
 
+    private void loadItems() {
+        progressBar.setVisibility(View.VISIBLE);
+        ApiClient.retrofit().getMainService().getAllIncomes(App.getUser().getKey()).enqueue(new Callback<Incomes>() {
+            @Override
+            public void onResponse(Call<Incomes> call, Response<Incomes> response) {
+
+                if (response.isSuccessful()) {
+                    App.setIncomes(response.body());
+                    adapter.addAll(response.body().getIncomeList());
+                }
+
+                swipeRefreshLayout.setRefreshing(false);
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<Incomes> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
+                progressBar.setVisibility(View.GONE);
+            }
+
+        });
+    }
+
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(getActivity().getApplicationContext(), DetailsIncomeActivity.class);
@@ -78,6 +110,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
 
     @Override
     public void onRefresh() {
-
+        loadItems();
     }
 }

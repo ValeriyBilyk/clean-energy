@@ -12,7 +12,7 @@ public class IncomeList {
     private String buyer;
     private Date incomeDate;
     private IncomeTypesList incomeTypes;
-    private IncomeSourceList incomeSource;
+    private IncomeSourceList incomeSources;
     private ProductTypesList productTypesTypes;
     private double amount;
     private long bags;
@@ -63,12 +63,12 @@ public class IncomeList {
         this.incomeTypes = incomeTypes;
     }
 
-    public IncomeSourceList getIncomeSource() {
-        return incomeSource;
+    public IncomeSourceList getIncomeSources() {
+        return incomeSources;
     }
 
-    public void setIncomeSource(IncomeSourceList incomeSource) {
-        this.incomeSource = incomeSource;
+    public void setIncomeSources(IncomeSourceList incomeSources) {
+        this.incomeSources = incomeSources;
     }
 
     public ProductTypesList getProductTypesTypes() {

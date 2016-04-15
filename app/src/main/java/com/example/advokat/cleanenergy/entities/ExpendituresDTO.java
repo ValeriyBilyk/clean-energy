@@ -2,6 +2,7 @@ package com.example.advokat.cleanenergy.entities;
 
 public class ExpendituresDTO {
 
+    private Long id;
     private Long currentAssets;
     private Long measureUnitSm;
     private double amount;
@@ -31,6 +32,37 @@ public class ExpendituresDTO {
         this.categoryExpenditure = categoryExpenditure;
         this.nameExpenditure = nameExpenditure;
         this.dateExpenditure = dateExpenditure;
+    }
+
+    public ExpendituresDTO(Long id, Long currentAssets, Long measureUnitSm, double amount, double money, Long payer, String description, String dateExpenditure) {
+        this.id = id;
+        this.currentAssets = currentAssets;
+        this.measureUnitSm = measureUnitSm;
+        this.amount = amount;
+        this.money = money;
+        this.payer = payer;
+        this.description = description;
+        this.dateExpenditure = dateExpenditure;
+    }
+
+    public ExpendituresDTO(Long id, Long measureUnitSm, double amount, double money, Long payer, String description, Long categoryExpenditure, String nameExpenditure, String dateExpenditure) {
+        this.id = id;
+        this.measureUnitSm = measureUnitSm;
+        this.amount = amount;
+        this.money = money;
+        this.payer = payer;
+        this.description = description;
+        this.categoryExpenditure = categoryExpenditure;
+        this.nameExpenditure = nameExpenditure;
+        this.dateExpenditure = dateExpenditure;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getCurrentAssets() {

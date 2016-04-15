@@ -52,6 +52,8 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
     private LinearLayout volatileCosts;
     private Switch changeCosts;
     private Button btnSendData;
+    private boolean isEditing;
+    private Expenditures expenditures;
 
     private Map<String, Integer> mapCurrentAssets;
     private Map<Long, Long> mapCurrentAssetsId;
@@ -64,7 +66,6 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
 
     private Map<String, Integer> mapPayer;
     private Map<Long, Long> mapPayerId;
-
 
 
     @Override
@@ -80,17 +81,8 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
         createMeasureUnit();
         createPayerMap();
 
-        Map<String, Integer> mapExpenditure = new HashMap<>();
-        Iterator<ExpenditureTypes> iterator1 = App.getCurrentAsset().getExpenditureTypes().iterator();
-        int j = 0;
-        while (iterator1.hasNext()) {
-            mapExpenditure.put(iterator1.next().getName(), j);
-            j++;
-        }
-
-
-        Expenditures expenditures = getIntent().getParcelableExtra(Expenditures.class.getName());
-        boolean isEditing = expenditures != null;
+        expenditures = getIntent().getParcelableExtra(Expenditures.class.getName());
+        isEditing = expenditures != null;
 
         if (isEditing) {
             setTitle("Редагувати");
@@ -103,7 +95,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                 spinnerExpenditure.setSelection(mapExpenditure.get(expenditures.getExpenditureTypesId().getName()));
             }
             verifyChangeCosts();
-            unitOfMeasurement.setSelection((int) (expenditures.getMeasureUnit().getId() - 1));
+            unitOfMeasurement.setSelection(mapMeasureUnit.get(expenditures.getMeasureUnit().getName()));
             payer.setSelection(mapPayer.get(expenditures.getPayer().getName()));
             amount.setText(String.valueOf(expenditures.getAmount()));
             cost.setText(String.valueOf(expenditures.getMoney()));
@@ -271,61 +263,134 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
             case R.id.button_send_data:
                 AccessKeyDto accessKeyDto = new AccessKeyDto(App.getUser().getKey());
                 ExpendituresDTO expendituresDTO;
-                if (changeCosts.isChecked()) {
-                    expendituresDTO = new ExpendituresDTO(
-                            mapCurrentAssetsId.get(spinnerCurrentAssets.getSelectedItemId()),
-                            mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
-                            Double.parseDouble(String.valueOf(amount.getText())),
-                            Double.parseDouble(String.valueOf(cost.getText())),
-                            mapPayerId.get(payer.getSelectedItemId()),
-                            description.getText().toString(),
-                            dateOfCost.getText().toString()
-                    );
+                double amountText;
+                double costText;
+                if (amount.getText().toString().equals("")) {
+                    amountText = 0;
                 } else {
-                    expendituresDTO = new ExpendituresDTO(
-                            mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
-                            Double.parseDouble(String.valueOf(amount.getText())),
-                            Double.parseDouble(String.valueOf(cost.getText())),
-                            mapPayerId.get(payer.getSelectedItemId()),
-                            description.getText().toString(),
-                            mapExpenditureId.get(spinnerExpenditure.getSelectedItemId()),
-                            nameOfCost.getText().toString(),
-                            dateOfCost.getText().toString()
-                    );
+                    amountText = Double.parseDouble(String.valueOf(amount.getText()));
                 }
-                DataRequest dataRequest = new DataRequest();
-                dataRequest.setAccessKeyDto(accessKeyDto);
-                dataRequest.setExpendituresDTO(expendituresDTO);
-                if (changeCosts.isChecked()) {
-                    ApiClient.retrofit().getMainService().sendDataConstant(dataRequest).enqueue(new Callback<Integer>() {
-                        @Override
-                        public void onResponse(Call<Integer> call, Response<Integer> response) {
-                            if (response.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<Integer> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                if (cost.getText().toString().equals("")) {
+                    costText = 0;
                 } else {
-                    ApiClient.retrofit().getMainService().sendDataParmenent(dataRequest).enqueue(new Callback<Integer>() {
-                        @Override
-                        public void onResponse(Call<Integer> call, Response<Integer> response) {
-                            if (response.isSuccessful()) {
-                                response.body();
-                                response.code();
-                                Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
+                    costText = Double.parseDouble(String.valueOf(cost.getText()));
+                }
+                if (!isEditing) {
+                    if (changeCosts.isChecked()) {
+                        expendituresDTO = new ExpendituresDTO(
+                                mapCurrentAssetsId.get(spinnerCurrentAssets.getSelectedItemId()),
+                                mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
+                                amountText,
+                                costText,
+                                mapPayerId.get(payer.getSelectedItemId()),
+                                description.getText().toString(),
+                                dateOfCost.getText().toString()
+                        );
+                    } else {
+                        expendituresDTO = new ExpendituresDTO(
+                                mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
+                                amountText,
+                                costText,
+                                mapPayerId.get(payer.getSelectedItemId()),
+                                description.getText().toString(),
+                                mapExpenditureId.get(spinnerExpenditure.getSelectedItemId()),
+                                nameOfCost.getText().toString(),
+                                dateOfCost.getText().toString()
+                        );
+                    }
+                    DataRequest dataRequest = new DataRequest();
+                    dataRequest.setAccessKeyDto(accessKeyDto);
+                    dataRequest.setExpendituresDTO(expendituresDTO);
+                    if (changeCosts.isChecked()) {
+                        ApiClient.retrofit().getMainService().sendDataConstant(dataRequest).enqueue(new Callback<Integer>() {
+                            @Override
+                            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call<Integer> call, Throwable t) {
-                            Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<Integer> call, Throwable t) {
+                                Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        ApiClient.retrofit().getMainService().sendDataParmenent(dataRequest).enqueue(new Callback<Integer>() {
+                            @Override
+                            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Integer> call, Throwable t) {
+                                Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } else {
+                    if (changeCosts.isChecked()) {
+                        expendituresDTO = new ExpendituresDTO(
+                                expenditures.getId(),
+                                mapCurrentAssetsId.get(spinnerCurrentAssets.getSelectedItemId()),
+                                mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
+                                amountText,
+                                costText,
+                                mapPayerId.get(payer.getSelectedItemId()),
+                                description.getText().toString(),
+                                dateOfCost.getText().toString()
+                        );
+                    } else {
+                        expendituresDTO = new ExpendituresDTO(
+                                expenditures.getId(),
+                                mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
+                                amountText,
+                                costText,
+                                mapPayerId.get(payer.getSelectedItemId()),
+                                description.getText().toString(),
+                                mapExpenditureId.get(spinnerExpenditure.getSelectedItemId()),
+                                nameOfCost.getText().toString(),
+                                dateOfCost.getText().toString()
+                        );
+                    }
+                    DataRequest dataRequest = new DataRequest();
+                    dataRequest.setAccessKeyDto(accessKeyDto);
+                    dataRequest.setExpendituresDTO(expendituresDTO);
+                    if (changeCosts.isChecked()) {
+                        ApiClient.retrofit().getMainService().editConstantData(dataRequest).enqueue(new Callback<Integer>() {
+                            @Override
+                            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(getApplicationContext(), "Успіх", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Integer> call, Throwable t) {
+
+                            }
+                        });
+                    } else {
+                        ApiClient.retrofit().getMainService().editNotParmenent(dataRequest).enqueue(new Callback<Integer>() {
+                            @Override
+                            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(getApplicationContext(), "Успіх", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Integer> call, Throwable t) {
+
+                            }
+                        });
+                    }
                 }
                 break;
         }

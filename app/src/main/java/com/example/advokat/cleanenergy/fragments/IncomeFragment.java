@@ -5,15 +5,21 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DetailsIncomeActivity;
 
-public class IncomeFragment extends Fragment implements View.OnClickListener {
+public class IncomeFragment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
+    private ProgressBar progressBar;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton fabAddData;
 
     @Nullable
@@ -28,6 +34,15 @@ public class IncomeFragment extends Fragment implements View.OnClickListener {
 
         getActivity().setTitle("Доходи");
 
+        progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
+
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         fabAddData = (FloatingActionButton) view.findViewById(R.id.fab_add_data);
         fabAddData.setOnClickListener(this);
     }
@@ -36,5 +51,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         Intent intent = new Intent(getActivity().getApplicationContext(), DetailsIncomeActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onRefresh() {
+
     }
 }

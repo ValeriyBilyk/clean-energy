@@ -35,4 +35,10 @@ public interface MainService {
     })
     @POST("user/api/expenditure/add/notParmenent")
     Call<Integer> sendDataParmenent(@Body DataRequest dataRequest);
+
+    @POST("user/api/expenditure/edit/constant")
+    Call<Integer> editConstantData(@Body DataRequest dataRequest);
+
+    @POST("user/api/expenditure/edit/notParmenent")
+    Call<Integer> editNotParmenent(@Body DataRequest dataRequest);
 }

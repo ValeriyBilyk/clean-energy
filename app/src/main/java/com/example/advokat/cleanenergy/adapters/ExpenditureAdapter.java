@@ -1,21 +1,16 @@
 package com.example.advokat.cleanenergy.adapters;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DetailsCostActivity;
 import com.example.advokat.cleanenergy.entities.cost.Expenditures;
-import com.example.advokat.cleanenergy.rest.ApiClient;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,11 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ExpenditureAdapter extends RecyclerView.Adapter<ExpenditureAdapter.ViewHolder> {
 
@@ -72,7 +62,7 @@ public class ExpenditureAdapter extends RecyclerView.Adapter<ExpenditureAdapter.
             }
         });
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+       /* holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 new AlertDialog.Builder(context)
@@ -84,7 +74,7 @@ public class ExpenditureAdapter extends RecyclerView.Adapter<ExpenditureAdapter.
                                 progressDialog.setCancelable(true);
                                 progressDialog.setMessage("Loading");
                                 progressDialog.show();
-                                ApiClient.retrofit().getMainService().deleteIncome(expenditure.getId())
+                                ApiClient.retrofit().getMainService().deleteExpenditure()
                                         .enqueue(new Callback<ResponseBody>() {
                                             @Override
                                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -109,7 +99,7 @@ public class ExpenditureAdapter extends RecyclerView.Adapter<ExpenditureAdapter.
                         .show();
                 return true;
             }
-        });
+        });*/
     }
 
     @Override

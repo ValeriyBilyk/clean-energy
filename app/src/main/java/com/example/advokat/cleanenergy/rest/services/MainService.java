@@ -7,6 +7,7 @@ import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
 import com.example.advokat.cleanenergy.entities.income.Incomes;
 import com.example.advokat.cleanenergy.rest.requests.AuthRequest;
 import com.example.advokat.cleanenergy.rest.requests.DataRequest;
+import com.example.advokat.cleanenergy.rest.requests.IncomeRequest;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -50,6 +51,15 @@ public interface MainService {
 
     @GET("user/api/income/get/all")
     Call<Incomes> getAllIncomes(@Query("accessKey") String accessKey);
+
+    @POST("user/api/income/add")
+    Call<Integer> sendIncome(@Body IncomeRequest incomeRequest);
+
+    @POST("user/api/income/update")
+    Call<Integer> updateIncome(@Body IncomeRequest incomeRequest);
+
+    @POST("user/api/expenditure/delete")
+    Call<Integer> deleteExpenditure(@Body DataRequest dataRequest);
 
     Call<ResponseBody> deleteIncome(long id);
 }

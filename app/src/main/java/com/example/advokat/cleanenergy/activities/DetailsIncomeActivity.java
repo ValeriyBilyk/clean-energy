@@ -13,9 +13,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.app.App;
+import com.example.advokat.cleanenergy.entities.AccessKeyDto;
+import com.example.advokat.cleanenergy.entities.IncomeDTO;
 import com.example.advokat.cleanenergy.entities.MeasureUnit;
 import com.example.advokat.cleanenergy.entities.Payer;
 import com.example.advokat.cleanenergy.entities.income.BuyerList;
@@ -23,13 +26,21 @@ import com.example.advokat.cleanenergy.entities.income.IncomeList;
 import com.example.advokat.cleanenergy.entities.income.IncomeSourceList;
 import com.example.advokat.cleanenergy.entities.income.IncomeTypesList;
 import com.example.advokat.cleanenergy.entities.income.ProductTypesList;
+import com.example.advokat.cleanenergy.rest.ApiClient;
+import com.example.advokat.cleanenergy.rest.requests.IncomeRequest;
 import com.example.advokat.cleanenergy.utils.ListUtil;
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class DetailsIncomeActivity extends AppCompatActivity {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class DetailsIncomeActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
 
     private Spinner spinnerOperation;
     private Spinner spinnerTypeOfOperation;
@@ -118,6 +129,22 @@ public class DetailsIncomeActivity extends AppCompatActivity {
                 }
             });
         }
+
+        dateOfCost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar now = Calendar.getInstance();
+                DatePickerDialog dpd = DatePickerDialog.newInstance(
+                        DetailsIncomeActivity.this,
+                        now.get(Calendar.YEAR),
+                        now.get(Calendar.MONTH),
+                        now.get(Calendar.DAY_OF_MONTH)
+                );
+                dpd.show(getFragmentManager(), "Datepickerdialog");
+            }
+        });
+
+        sendData.setOnClickListener(this);
     }
 
     private void verifyChangeIncome() {
@@ -264,5 +291,107 @@ public class DetailsIncomeActivity extends AppCompatActivity {
     private void goToMainActivity() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
+        String month = "";
+        String day = "";
+        if (String.valueOf(monthOfYear).length() < 2) {
+            month = "0" + (monthOfYear + 1);
+        } else {
+            month = String.valueOf((monthOfYear + 1));
+        }
+        if (String.valueOf(dayOfMonth).length() < 2) {
+            day = "0" + (dayOfMonth);
+        } else {
+            day = String.valueOf(dayOfMonth);
+        }
+        String date = year + "-" + month + "-" + day;
+        dateOfCost.setText(date);
+    }
+
+    @Override
+    public void onClick(View v) {
+        AccessKeyDto accessKeyDto = new AccessKeyDto(App.getUser().getKey());
+        IncomeDTO incomeDTO = null;
+        double amountText;
+        double costText;
+        if (editTextAmount.getText().toString().equals("")) {
+            amountText = 0;
+        } else {
+            amountText = Double.parseDouble(String.valueOf(editTextAmount.getText()));
+        }
+        if (editTextCost.getText().toString().equals("")) {
+            costText = 0;
+        } else {
+            costText = Double.parseDouble(String.valueOf(editTextCost.getText()));
+        }
+        if (!isEditing) {
+            incomeDTO = new IncomeDTO(
+                    amountText,
+                    Double.parseDouble(editTextAmountOfBoxes.getText().toString()),
+                    mapConstantBuyerId.get(spinnerConstantBuyer.getSelectedItemId()),
+                    editTextDescription.getText().toString(),
+                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
+                    mapOperationId.get(spinnerOperation.getSelectedItemId()),
+                    mapTypeOfOperationId.get(spinnerTypeOfOperation.getSelectedItemId()),
+                    mapMeasureUnitId.get(spinnerUnitOfMeasurement.getSelectedItemId()),
+                    costText,
+                    mapTypeOfIncomeId.get(spinnerTypeOfIncome.getSelectedItemId()),
+                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
+                    dateOfCost.getText().toString()
+            );
+            IncomeRequest incomeRequest = new IncomeRequest();
+            incomeRequest.setIncomeDTO(incomeDTO);
+            incomeRequest.setAccessKeyDto(accessKeyDto);
+            ApiClient.retrofit().getMainService().sendIncome(incomeRequest).enqueue(new Callback<Integer>() {
+                @Override
+                public void onResponse(Call<Integer> call, Response<Integer> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Integer> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            incomeDTO = new IncomeDTO(
+                    incomeList.getId(),
+                    amountText,
+                    Double.parseDouble(editTextAmountOfBoxes.getText().toString()),
+                    mapConstantBuyerId.get(spinnerConstantBuyer.getSelectedItemId()),
+                    editTextDescription.getText().toString(),
+                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
+                    mapOperationId.get(spinnerOperation.getSelectedItemId()),
+                    mapTypeOfOperationId.get(spinnerTypeOfOperation.getSelectedItemId()),
+                    mapMeasureUnitId.get(spinnerUnitOfMeasurement.getSelectedItemId()),
+                    costText,
+                    mapTypeOfIncomeId.get(spinnerTypeOfIncome.getSelectedItemId()),
+                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
+                    dateOfCost.getText().toString()
+            );
+            IncomeRequest incomeRequest = new IncomeRequest();
+            incomeRequest.setIncomeDTO(incomeDTO);
+            incomeRequest.setAccessKeyDto(accessKeyDto);
+            ApiClient.retrofit().getMainService().updateIncome(incomeRequest).enqueue(new Callback<Integer>() {
+                @Override
+                public void onResponse(Call<Integer> call, Response<Integer> response) {
+                    if (response.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "update", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Integer> call, Throwable t) {
+                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+
     }
 }

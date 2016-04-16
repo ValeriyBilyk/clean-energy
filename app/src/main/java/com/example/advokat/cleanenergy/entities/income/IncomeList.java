@@ -6,14 +6,12 @@ import android.os.Parcelable;
 import com.example.advokat.cleanenergy.entities.MeasureUnit;
 import com.example.advokat.cleanenergy.entities.Payer;
 
-import java.util.Date;
-
-public class IncomeList implements Parcelable {
+public class IncomeList implements Parcelable{
 
     private long id;
     private BuyerList buyerId;
     private String buyer;
-    private Date incomeDate;
+    private String incomeDate;
     private IncomeTypesList incomeTypes;
     private IncomeSourceList incomeSources;
     private ProductTypesList productTypesTypes;
@@ -30,12 +28,18 @@ public class IncomeList implements Parcelable {
         id = in.readLong();
         buyerId = in.readParcelable(BuyerList.class.getClassLoader());
         buyer = in.readString();
+        incomeDate = in.readString();
+        incomeTypes = in.readParcelable(IncomeTypesList.class.getClassLoader());
+        incomeSources = in.readParcelable(IncomeSourceList.class.getClassLoader());
+        productTypesTypes = in.readParcelable(ProductTypesList.class.getClassLoader());
         amount = in.readDouble();
         bags = in.readLong();
         money = in.readDouble();
+        locations = in.readParcelable(Locations.class.getClassLoader());
         comment = in.readString();
         measureUnit = in.readParcelable(MeasureUnit.class.getClassLoader());
         payer = in.readParcelable(Payer.class.getClassLoader());
+        recepient = in.readParcelable(Recepient.class.getClassLoader());
     }
 
     public static final Creator<IncomeList> CREATOR = new Creator<IncomeList>() {
@@ -74,20 +78,20 @@ public class IncomeList implements Parcelable {
         this.buyer = buyer;
     }
 
-    public Date getIncomeDate() {
-        return incomeDate;
-    }
-
-    public void setIncomeDate(Date incomeDate) {
-        this.incomeDate = incomeDate;
-    }
-
     public IncomeTypesList getIncomeTypes() {
         return incomeTypes;
     }
 
     public void setIncomeTypes(IncomeTypesList incomeTypes) {
         this.incomeTypes = incomeTypes;
+    }
+
+    public String getIncomeDate() {
+        return incomeDate;
+    }
+
+    public void setIncomeDate(String incomeDate) {
+        this.incomeDate = incomeDate;
     }
 
     public IncomeSourceList getIncomeSources() {
@@ -180,11 +184,17 @@ public class IncomeList implements Parcelable {
         dest.writeLong(id);
         dest.writeParcelable(buyerId, flags);
         dest.writeString(buyer);
+        dest.writeString(incomeDate);
+        dest.writeParcelable(incomeTypes, flags);
+        dest.writeParcelable(incomeSources, flags);
+        dest.writeParcelable(productTypesTypes, flags);
         dest.writeDouble(amount);
         dest.writeLong(bags);
         dest.writeDouble(money);
+        dest.writeParcelable(locations, flags);
         dest.writeString(comment);
         dest.writeParcelable(measureUnit, flags);
         dest.writeParcelable(payer, flags);
+        dest.writeParcelable(recepient, flags);
     }
 }

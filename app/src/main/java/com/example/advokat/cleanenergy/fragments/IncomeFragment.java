@@ -60,6 +60,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
         fabAddData.setOnClickListener(this);
 
         loadItems();
+        loadCategoryItems();
     }
 
     private void loadCategoryItems() {
@@ -68,12 +69,17 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
                 .enqueue(new Callback<IncomeCategory>() {
                     @Override
                     public void onResponse(Call<IncomeCategory> call, Response<IncomeCategory> response) {
-
+                        if (response.isSuccessful()) {
+                            App.setIncomeCategory(response.body());
+                        }
+                        swipeRefreshLayout.setRefreshing(false);
+                        progressBar.setVisibility(View.GONE);
                     }
 
                     @Override
                     public void onFailure(Call<IncomeCategory> call, Throwable t) {
-
+                        swipeRefreshLayout.setRefreshing(false);
+                        progressBar.setVisibility(View.GONE);
                     }
                 });
     }

@@ -11,9 +11,7 @@ import android.widget.TextView;
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DetailsIncomeActivity;
 import com.example.advokat.cleanenergy.entities.income.IncomeList;
-import com.example.advokat.cleanenergy.entities.income.Incomes;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -43,9 +41,6 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.ViewHolder
     public void onBindViewHolder(final ViewHolder holder, int position) {
         IncomeList income = items.get(position);
         String buyer, locations;
-        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-        String date = format.format(income.getIncomeDate());
-
         if (income.getBuyerId() == null) {
             buyer = income.getBuyer();
             locations = income.getLocations().getName();
@@ -59,13 +54,13 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.ViewHolder
         holder.textBuyer.setText(buyer);
         holder.textPayer.setText(income.getPayer().getName());
         holder.textMoney.setText(String.valueOf(income.getMoney()) + " грн");
-        holder.textCountAndDate.setText(String.format(Locale.getDefault(), "%.2f, %s, %s, %s", income.getAmount(), income.getMeasureUnit().getName(), date, locations));
+        holder.textCountAndDate.setText(String.format(Locale.getDefault(), "%.2f, %s, %s, %s", income.getAmount(), income.getMeasureUnit().getName(), income.getIncomeDate(), locations));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailsIncomeActivity.class);
-                intent.putExtra(Incomes.class.getName(), items.get(holder.getAdapterPosition()));
+                intent.putExtra(IncomeList.class.getName(), items.get(holder.getAdapterPosition()));
                 context.startActivity(intent);
             }
         });

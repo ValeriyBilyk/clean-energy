@@ -6,6 +6,7 @@ import android.content.Context;
 import com.example.advokat.cleanenergy.entities.CurrentAsset;
 import com.example.advokat.cleanenergy.entities.User;
 import com.example.advokat.cleanenergy.entities.cost.Cost;
+import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
 import com.example.advokat.cleanenergy.entities.income.Incomes;
 
 public class App extends Application {
@@ -15,6 +16,7 @@ public class App extends Application {
     private static CurrentAsset currentAsset;
     private static Cost cost;
     private static Incomes incomes;
+    private static IncomeCategory incomeCategory;
 
     @Override
     public void onCreate() {
@@ -56,5 +58,13 @@ public class App extends Application {
 
     public static void setIncomes(Incomes incomes) {
         App.incomes = incomes;
+    }
+
+    public static IncomeCategory getIncomeCategory() {
+        return incomeCategory;
+    }
+
+    public static void setIncomeCategory(IncomeCategory incomeCategory) {
+        App.incomeCategory = incomeCategory;
     }
 }

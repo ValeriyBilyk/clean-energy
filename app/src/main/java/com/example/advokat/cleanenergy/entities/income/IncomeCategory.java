@@ -1,14 +1,33 @@
 package com.example.advokat.cleanenergy.entities.income;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
-public class IncomeCategory {
+public class IncomeCategory implements Parcelable {
 
     private List<BuyerList> buyerList;
     private List<LocationsTypesList> locationsTypesList;
     private List<IncomeTypesList> incomeTypesList;
     private List<IncomeSourceList> incomeSourceList;
     private List<ProductTypesList> productTypesList;
+
+    protected IncomeCategory(Parcel in) {
+        buyerList = in.createTypedArrayList(BuyerList.CREATOR);
+    }
+
+    public static final Creator<IncomeCategory> CREATOR = new Creator<IncomeCategory>() {
+        @Override
+        public IncomeCategory createFromParcel(Parcel in) {
+            return new IncomeCategory(in);
+        }
+
+        @Override
+        public IncomeCategory[] newArray(int size) {
+            return new IncomeCategory[size];
+        }
+    };
 
     public List<BuyerList> getBuyerList() {
         return buyerList;
@@ -48,5 +67,15 @@ public class IncomeCategory {
 
     public void setProductTypesList(List<ProductTypesList> productTypesList) {
         this.productTypesList = productTypesList;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeTypedList(buyerList);
     }
 }

@@ -1,6 +1,7 @@
 package com.example.advokat.cleanenergy.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.advokat.cleanenergy.R;
+import com.example.advokat.cleanenergy.activities.DetailsIncomeActivity;
 import com.example.advokat.cleanenergy.entities.income.IncomeList;
+import com.example.advokat.cleanenergy.entities.income.Incomes;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +40,7 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         IncomeList income = items.get(position);
         String buyer, locations;
         SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
@@ -57,6 +60,15 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.ViewHolder
         holder.textPayer.setText(income.getPayer().getName());
         holder.textMoney.setText(String.valueOf(income.getMoney()) + " грн");
         holder.textCountAndDate.setText(String.format(Locale.getDefault(), "%.2f, %s, %s, %s", income.getAmount(), income.getMeasureUnit().getName(), date, locations));
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DetailsIncomeActivity.class);
+                intent.putExtra(Incomes.class.getName(), items.get(holder.getAdapterPosition()));
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override

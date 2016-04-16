@@ -367,7 +367,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                             public void onResponse(Call<Integer> call, Response<Integer> response) {
                                 if (response.isSuccessful()) {
                                     goToMainActivity();
-                                    Toast.makeText(getApplicationContext(), "Успіх", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Успішно", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
                                 }
@@ -384,7 +384,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                             public void onResponse(Call<Integer> call, Response<Integer> response) {
                                 if (response.isSuccessful()) {
                                     goToMainActivity();
-                                    Toast.makeText(getApplicationContext(), "Успіх", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Успішно", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
                                 }

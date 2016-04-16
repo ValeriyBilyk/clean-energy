@@ -1,11 +1,14 @@
 package com.example.advokat.cleanenergy.entities.income;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.example.advokat.cleanenergy.entities.MeasureUnit;
 import com.example.advokat.cleanenergy.entities.Payer;
 
 import java.util.Date;
 
-public class IncomeList {
+public class IncomeList implements Parcelable {
 
     private long id;
     private BuyerList buyerId;
@@ -22,6 +25,30 @@ public class IncomeList {
     private MeasureUnit measureUnit;
     private Payer payer;
     private Recepient recepient;
+
+    protected IncomeList(Parcel in) {
+        id = in.readLong();
+        buyerId = in.readParcelable(BuyerList.class.getClassLoader());
+        buyer = in.readString();
+        amount = in.readDouble();
+        bags = in.readLong();
+        money = in.readDouble();
+        comment = in.readString();
+        measureUnit = in.readParcelable(MeasureUnit.class.getClassLoader());
+        payer = in.readParcelable(Payer.class.getClassLoader());
+    }
+
+    public static final Creator<IncomeList> CREATOR = new Creator<IncomeList>() {
+        @Override
+        public IncomeList createFromParcel(Parcel in) {
+            return new IncomeList(in);
+        }
+
+        @Override
+        public IncomeList[] newArray(int size) {
+            return new IncomeList[size];
+        }
+    };
 
     public long getId() {
         return id;
@@ -141,5 +168,23 @@ public class IncomeList {
 
     public void setRecepient(Recepient recepient) {
         this.recepient = recepient;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeParcelable(buyerId, flags);
+        dest.writeString(buyer);
+        dest.writeDouble(amount);
+        dest.writeLong(bags);
+        dest.writeDouble(money);
+        dest.writeString(comment);
+        dest.writeParcelable(measureUnit, flags);
+        dest.writeParcelable(payer, flags);
     }
 }

@@ -18,25 +18,30 @@ import android.widget.ProgressBar;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DetailsCostActivity;
-import com.example.advokat.cleanenergy.adapters.ExpenditureAdapter;
-import com.example.advokat.cleanenergy.app.App;
+import com.example.advokat.cleanenergy.adapters.CostAdapter;
 import com.example.advokat.cleanenergy.entities.CurrentAsset;
 import com.example.advokat.cleanenergy.entities.cost.Cost;
+import com.example.advokat.cleanenergy.entities.cost.Expenditures;
 import com.example.advokat.cleanenergy.rest.ApiClient;
 import com.example.advokat.cleanenergy.rest.requests.AuthRequest;
+import com.example.advokat.cleanenergy.utils.PreferenceManager;
 
 import java.io.IOException;
+import java.util.List;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
+public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
     private ProgressBar progressBar;
-    private ExpenditureAdapter adapter;
+    private CostAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton fabAddData;
+
+    private Realm realm = Realm.getDefaultInstance();
 
     @Nullable
     @Override
@@ -63,20 +68,22 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
         fabAddData = (FloatingActionButton) view.findViewById(R.id.fab_add_data);
         fabAddData.setOnClickListener(this);
 
-        adapter = new ExpenditureAdapter();
+        adapter = new CostAdapter();
         recyclerView.setAdapter(adapter);
 
-        loadItems();
-        loadCategoryItems();
+        if (realm.where(Expenditures.class).findFirst() == null) {
+            loadItems();
+            loadCategoryItems();
+        }
     }
 
     private void loadItems() {
         progressBar.setVisibility(View.VISIBLE);
-        ApiClient.retrofit().getMainService().getAllCosts(new AuthRequest(App.getUser().getKey())).enqueue(new Callback<Cost>() {
+        ApiClient.retrofit().getMainService().getAllCosts(new AuthRequest(PreferenceManager.getAccessToken())).enqueue(new Callback<Cost>() {
             @Override
             public void onResponse(Call<Cost> call, Response<Cost> response) {
                 if (response.isSuccessful()) {
-                    App.setCost(response.body());
+                    copyAllExpendituresToRealm(response.body().getExpenditures());
                     adapter.addAll(response.body().getExpenditures());
                 } else {
                     try {
@@ -101,11 +108,11 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
 
     private void loadCategoryItems() {
         progressBar.setVisibility(View.VISIBLE);
-        ApiClient.retrofit().getMainService().getCurrentAsset(App.getUser().getKey()).enqueue(new Callback<CurrentAsset>() {
+        ApiClient.retrofit().getMainService().getCurrentAsset(PreferenceManager.getAccessToken()).enqueue(new Callback<CurrentAsset>() {
             @Override
             public void onResponse(Call<CurrentAsset> call, Response<CurrentAsset> response) {
                 if (response.isSuccessful()) {
-                    App.setCurrentAsset(response.body());
+                    copyAllExpendituresCategoriesToRealm(response.body());
                 } else {
                     try {
                         ApiClient.onError(response.errorBody().string(), getActivity());
@@ -129,6 +136,7 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
     @Override
     public void onRefresh() {
         loadItems();
+        loadCategoryItems();
     }
 
     @Override
@@ -139,6 +147,7 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
                 startActivity(intent);
         }
     }
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -153,5 +162,27 @@ public class ExpenditureFragment extends Fragment implements SwipeRefreshLayout.
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void copyAllExpendituresToRealm(List<Expenditures> expendituresList) {
+        realm.beginTransaction();
+        for (Expenditures expenditures : expendituresList) {
+            realm.copyToRealmOrUpdate(expenditures);
+        }
+        realm.commitTransaction();
+    }
+
+    private void copyAllExpendituresCategoriesToRealm(CurrentAsset currentAsset) {
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(currentAsset);
+        realm.commitTransaction();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (realm != null) {
+            realm.close();
+        }
     }
 }

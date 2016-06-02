@@ -1,6 +1,5 @@
 package com.example.advokat.cleanenergy.activities;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -14,12 +13,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.app.App;
-import com.example.advokat.cleanenergy.fragments.ExpenditureFragment;
+import com.example.advokat.cleanenergy.fragments.CostFragment;
 import com.example.advokat.cleanenergy.fragments.IncomeFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticExpenditureFragment;
 import com.example.advokat.cleanenergy.fragments.StatisticIncomeFragment;
-import com.example.advokat.cleanenergy.rest.services.MainService;
+import com.example.advokat.cleanenergy.utils.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,8 +25,6 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
-    private MainService mainService;
-    private ProgressDialog pDialog;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -64,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //Replacing the main content with StatisticExpenditureFragment Which is our Inbox View;
                     case R.id.costs:
-                        replaceFragment(new ExpenditureFragment());
+                        replaceFragment(new CostFragment());
                         return true;
 
                     case R.id.income:
@@ -82,7 +78,9 @@ public class MainActivity extends AppCompatActivity {
                         return true;
 
                     case R.id.exit:
-                        App.getUser().setKey(null);
+//                        App.getUser().setKey(null);
+                        PreferenceManager.setStayInSystem(false);
+                        PreferenceManager.setAccessToken(null);
                         Intent intent = new Intent(getApplicationContext(), SignInActivity.class);
                         startActivity(intent);
                         return true;
@@ -119,14 +117,15 @@ public class MainActivity extends AppCompatActivity {
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
 
-       /* pDialog = new ProgressDialog(MainActivity.this);
-        pDialog.setMessage("Please wait...");
-        pDialog.setCancelable(false);
-        pDialog.show();*/
-
         if (savedInstanceState == null) {
             navigationView.getMenu().performIdentifierAction(R.id.costs, 0);
         }
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
     }
 

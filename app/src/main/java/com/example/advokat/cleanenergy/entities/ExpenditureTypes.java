@@ -1,7 +1,11 @@
 package com.example.advokat.cleanenergy.entities;
 
-public class ExpenditureTypes {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
+public class ExpenditureTypes extends RealmObject {
+
+    @PrimaryKey
     private long id;
     private String name;
     private boolean toCurrentAssets;

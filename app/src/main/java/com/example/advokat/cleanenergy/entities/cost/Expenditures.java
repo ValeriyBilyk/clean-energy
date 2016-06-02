@@ -1,50 +1,26 @@
 package com.example.advokat.cleanenergy.entities.cost;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.example.advokat.cleanenergy.entities.MeasureUnit;
 import com.example.advokat.cleanenergy.entities.Payer;
 
-public class Expenditures implements Parcelable
-{
+import java.util.Date;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class Expenditures extends RealmObject {
+
+    @PrimaryKey
     private long id;
     private ExpenditureTypesId expenditureTypesId;
     private CurrentAssetsTypeId currentAssetsTypeId;
-    private String expenditureDate;
+    private Date expenditureDate;
     private double amount;
     private MeasureUnit measureUnit;
     private double money;
     private String description;
     private String comment;
     private Payer payer;
-
-
-    protected Expenditures(Parcel in) {
-        id = in.readLong();
-        expenditureTypesId = in.readParcelable(ExpenditureTypesId.class.getClassLoader());
-        currentAssetsTypeId = in.readParcelable(CurrentAssetsTypeId.class.getClassLoader());
-        expenditureDate = in.readString();
-        amount = in.readDouble();
-        measureUnit = in.readParcelable(MeasureUnit.class.getClassLoader());
-        money = in.readDouble();
-        description = in.readString();
-        comment = in.readString();
-        payer = in.readParcelable(Payer.class.getClassLoader());
-    }
-
-    public static final Creator<Expenditures> CREATOR = new Creator<Expenditures>() {
-        @Override
-        public Expenditures createFromParcel(Parcel in) {
-            return new Expenditures(in);
-        }
-
-        @Override
-        public Expenditures[] newArray(int size) {
-            return new Expenditures[size];
-        }
-    };
 
     public long getId() {
         return id;
@@ -66,16 +42,16 @@ public class Expenditures implements Parcelable
         return currentAssetsTypeId;
     }
 
-    public void setCurrentAssetsTypeId(CurrentAssetsTypeId currentAssetsTypeId) {
-        this.currentAssetsTypeId = currentAssetsTypeId;
-    }
-
-    public String getExpenditureDate() {
+    public Date getExpenditureDate() {
         return expenditureDate;
     }
 
-    public void setExpenditureDate(String expenditureDate) {
+    public void setExpenditureDate(Date expenditureDate) {
         this.expenditureDate = expenditureDate;
+    }
+
+    public void setCurrentAssetsTypeId(CurrentAssetsTypeId currentAssetsTypeId) {
+        this.currentAssetsTypeId = currentAssetsTypeId;
     }
 
     public double getAmount() {
@@ -124,25 +100,5 @@ public class Expenditures implements Parcelable
 
     public void setPayer(Payer payer) {
         this.payer = payer;
-    }
-
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeParcelable(expenditureTypesId, flags);
-        dest.writeParcelable(currentAssetsTypeId, flags);
-        dest.writeString(expenditureDate);
-        dest.writeDouble(amount);
-        dest.writeParcelable(measureUnit, flags);
-        dest.writeDouble(money);
-        dest.writeString(description);
-        dest.writeString(comment);
-        dest.writeParcelable(payer, flags);
     }
 }

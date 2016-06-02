@@ -1,6 +1,5 @@
 package com.example.advokat.cleanenergy.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -14,13 +13,16 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.activities.DetailsIncomeActivity;
 import com.example.advokat.cleanenergy.adapters.IncomeAdapter;
-import com.example.advokat.cleanenergy.app.App;
 import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
+import com.example.advokat.cleanenergy.entities.income.IncomeList;
 import com.example.advokat.cleanenergy.entities.income.Incomes;
 import com.example.advokat.cleanenergy.rest.ApiClient;
+import com.example.advokat.cleanenergy.utils.PreferenceManager;
 
+import java.util.List;
+
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,6 +33,8 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
     private IncomeAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton fabAddData;
+
+    private Realm realm = Realm.getDefaultInstance();
 
     @Nullable
     @Override
@@ -65,12 +69,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
 
     private void loadCategoryItems() {
         progressBar.setVisibility(View.VISIBLE);
-        ApiClient.retrofit().getMainService().getAllIncomeCategory(App.getUser().getKey())
+        ApiClient.retrofit().getMainService().getAllIncomeCategory(PreferenceManager.getAccessToken())
                 .enqueue(new Callback<IncomeCategory>() {
                     @Override
                     public void onResponse(Call<IncomeCategory> call, Response<IncomeCategory> response) {
                         if (response.isSuccessful()) {
-                            App.setIncomeCategory(response.body());
+
                         }
                         swipeRefreshLayout.setRefreshing(false);
                         progressBar.setVisibility(View.GONE);
@@ -86,12 +90,10 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
 
     private void loadItems() {
         progressBar.setVisibility(View.VISIBLE);
-        ApiClient.retrofit().getMainService().getAllIncomes(App.getUser().getKey()).enqueue(new Callback<Incomes>() {
+        ApiClient.retrofit().getMainService().getAllIncomes(PreferenceManager.getAccessToken()).enqueue(new Callback<Incomes>() {
             @Override
             public void onResponse(Call<Incomes> call, Response<Incomes> response) {
-
                 if (response.isSuccessful()) {
-                    App.setIncomes(response.body());
                     adapter.addAll(response.body().getIncomeList());
                 }
 
@@ -108,14 +110,37 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
         });
     }
 
+    /*private void copyAllExpendituresToRealm(List<Expenditures> expendituresList) {
+        realm.beginTransaction();
+        for (Expenditures expenditures : expendituresList) {
+            realm.copyToRealmOrUpdate(expenditures);
+        }
+        realm.commitTransaction();
+    }
+
+    private void copyAllExpendituresCategoriesToRealm(CurrentAsset currentAsset) {
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(currentAsset);
+        realm.commitTransaction();
+    }*/
+
+    private void copyAllIncomesToRealm(List<IncomeList> incomeLists) {
+        realm.beginTransaction();
+        for (IncomeList incomeList : incomeLists) {
+            realm.copyToRealmOrUpdate(incomeList);
+        }
+        realm.commitTransaction();
+    }
+
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(getActivity().getApplicationContext(), DetailsIncomeActivity.class);
-        startActivity(intent);
+        /*Intent intent = new Intent(getActivity().getApplicationContext(), DetailsIncomeActivity.class);
+        startActivity(intent);*/
     }
 
     @Override
     public void onRefresh() {
         loadItems();
+        loadCategoryItems();
     }
 }

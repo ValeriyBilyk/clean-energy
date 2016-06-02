@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.adapters.StatisticCostAdapter;
-import com.example.advokat.cleanenergy.app.App;
 
 public class StatisticExpenditureFragment extends Fragment {
 
@@ -36,7 +35,7 @@ public class StatisticExpenditureFragment extends Fragment {
         adapter = new StatisticCostAdapter();
         recyclerView.setAdapter(adapter);
 
-        adapter.addAll(App.getCost().getSumMoney());
+       // adapter.addAll(App.getCost().getSumMoney());
     }
 
 }

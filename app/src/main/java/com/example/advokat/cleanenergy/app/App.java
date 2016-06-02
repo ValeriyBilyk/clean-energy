@@ -3,44 +3,46 @@ package com.example.advokat.cleanenergy.app;
 import android.app.Application;
 import android.content.Context;
 
-import com.example.advokat.cleanenergy.entities.CurrentAsset;
-import com.example.advokat.cleanenergy.entities.User;
-import com.example.advokat.cleanenergy.entities.cost.Cost;
-import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
-import com.example.advokat.cleanenergy.entities.income.Incomes;
+import com.example.advokat.cleanenergy.utils.PreferenceManager;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class App extends Application {
 
     private static Context context;
-    private static User user;
-    private static CurrentAsset currentAsset;
+//    private static User user;
+    /*private static CurrentAsset currentAsset;
     private static Cost cost;
     private static Incomes incomes;
-    private static IncomeCategory incomeCategory;
+    private static IncomeCategory incomeCategory;*/
 
     @Override
     public void onCreate() {
         super.onCreate();
         context = this;
+        RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+        Realm.setDefaultConfiguration(config);
+        PreferenceManager.init(this);
     }
 
     public static Context getAppContext() {
         return context;
     }
 
-    public static User getUser() {
+   /* public static User getUser() {
         return user;
     }
 
     public static void setUser(User user) {
         App.user = user;
-    }
+    }*/
 
-    public static CurrentAsset getCurrentAsset() {
+    /*public static CurrentAsset getCurrentAsset() {
         return currentAsset;
-    }
+    }*/
 
-    public static void setCurrentAsset(CurrentAsset currentAsset) {
+    /*public static void setCurrentAsset(CurrentAsset currentAsset) {
         App.currentAsset = currentAsset;
     }
 
@@ -66,5 +68,5 @@ public class App extends Application {
 
     public static void setIncomeCategory(IncomeCategory incomeCategory) {
         App.incomeCategory = incomeCategory;
-    }
+    }*/
 }

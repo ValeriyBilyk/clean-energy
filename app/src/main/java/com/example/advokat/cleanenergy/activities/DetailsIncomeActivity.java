@@ -1,3 +1,4 @@
+/*
 package com.example.advokat.cleanenergy.activities;
 
 import android.content.Intent;
@@ -111,8 +112,12 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
             verifyChangeIncome();
             spinnerOperation.setSelection(mapOperation.get(incomeList.getIncomeSources().getName()));
             spinnerTypeOfOperation.setSelection(mapTypeOfOperation.get(incomeList.getIncomeTypes().getName()));
-            spinnerUnitOfMeasurement.setSelection(mapMeasureUnit.get(incomeList.getMeasureUnit().getName()));
-            spinnerTypeOfIncome.setSelection(mapTypeOfIncome.get(incomeList.getProductTypesTypes().getName()));
+            if (incomeList.getMeasureUnit() != null) {
+                spinnerUnitOfMeasurement.setSelection(mapMeasureUnit.get(incomeList.getMeasureUnit().getName()));
+            }
+            if (incomeList.getProductTypesTypes() != null) {
+                spinnerTypeOfIncome.setSelection(mapTypeOfIncome.get(incomeList.getProductTypesTypes().getName()));
+            }
             spinnerReceiverMoney.setSelection(mapReceiverMoney.get(incomeList.getPayer().getName()));
             editTextAmount.setText(String.valueOf(incomeList.getAmount()));
             editTextCost.setText(String.valueOf(incomeList.getMoney()));
@@ -395,3 +400,4 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
 
     }
 }
+*/

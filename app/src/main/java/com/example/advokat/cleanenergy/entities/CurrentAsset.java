@@ -1,43 +1,56 @@
 package com.example.advokat.cleanenergy.entities;
 
-import java.util.List;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-public class CurrentAsset {
+public class CurrentAsset extends RealmObject{
 
-    List<ExpenditureTypes> expenditureTypes;
-    List<MeasureUnit> measureUnit;
-    List<CurrentAssetsType> currentAssetsType;
-    List<Payer> payer;
+    @PrimaryKey
+    private long id;
 
-    public List<ExpenditureTypes> getExpenditureTypes() {
+    RealmList<ExpenditureTypes> expenditureTypes;
+    RealmList<MeasureUnit> measureUnit;
+    RealmList<CurrentAssetsType> currentAssetsType;
+    RealmList<Payer> payer;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public RealmList<ExpenditureTypes> getExpenditureTypes() {
         return expenditureTypes;
     }
 
-    public void setExpenditureTypes(List<ExpenditureTypes> expenditureTypes) {
+    public void setExpenditureTypes(RealmList<ExpenditureTypes> expenditureTypes) {
         this.expenditureTypes = expenditureTypes;
     }
 
-    public List<MeasureUnit> getMeasureUnit() {
+    public RealmList<MeasureUnit> getMeasureUnit() {
         return measureUnit;
     }
 
-    public void setMeasureUnit(List<MeasureUnit> measureUnit) {
+    public void setMeasureUnit(RealmList<MeasureUnit> measureUnit) {
         this.measureUnit = measureUnit;
     }
 
-    public List<CurrentAssetsType> getCurrentAssetsType() {
+    public RealmList<CurrentAssetsType> getCurrentAssetsType() {
         return currentAssetsType;
     }
 
-    public void setCurrentAssetsType(List<CurrentAssetsType> currentAssetsType) {
+    public void setCurrentAssetsType(RealmList<CurrentAssetsType> currentAssetsType) {
         this.currentAssetsType = currentAssetsType;
     }
 
-    public List<Payer> getPayer() {
+    public RealmList<Payer> getPayer() {
         return payer;
     }
 
-    public void setPayer(List<Payer> payer) {
+    public void setPayer(RealmList<Payer> payer) {
         this.payer = payer;
     }
 }

@@ -1,7 +1,6 @@
 package com.example.advokat.cleanenergy.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.activities.DetailsIncomeActivity;
 import com.example.advokat.cleanenergy.entities.income.IncomeList;
 
 import java.util.ArrayList;
@@ -50,18 +48,24 @@ public class IncomeAdapter extends RecyclerView.Adapter<IncomeAdapter.ViewHolder
         }
         holder.textOperation.setText(income.getIncomeSources().getName());
         holder.textTypeOfOperation.setText(income.getIncomeTypes().getName());
-        holder.textTypeOfProduct.setText(income.getProductTypesTypes().getName());
+        if (income.getProductTypesTypes() != null) {
+            holder.textTypeOfProduct.setText(income.getProductTypesTypes().getName());
+        }
         holder.textBuyer.setText(buyer);
         holder.textPayer.setText(income.getPayer().getName());
         holder.textMoney.setText(String.valueOf(income.getMoney()) + " грн");
-        holder.textCountAndDate.setText(String.format(Locale.getDefault(), "%.2f, %s, %s, %s", income.getAmount(), income.getMeasureUnit().getName(), income.getIncomeDate(), locations));
+        String measureUnit = "";
+        if (income.getMeasureUnit() == null) {
+            measureUnit = "qw";
+        }
+        holder.textCountAndDate.setText(String.format(Locale.getDefault(), "%.2f, %s, %s, %s", income.getAmount(), measureUnit /*income.getMeasureUnit().getName()*/, income.getIncomeDate(), locations));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, DetailsIncomeActivity.class);
+                /*Intent intent = new Intent(context, DetailsIncomeActivity.class);
                 intent.putExtra(IncomeList.class.getName(), items.get(holder.getAdapterPosition()));
-                context.startActivity(intent);
+                context.startActivity(intent);*/
             }
         });
     }

@@ -1,17 +1,20 @@
 package com.example.advokat.cleanenergy.entities.income;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.example.advokat.cleanenergy.entities.MeasureUnit;
 import com.example.advokat.cleanenergy.entities.Payer;
 
-public class IncomeList implements Parcelable{
+import java.util.Date;
 
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class IncomeList extends RealmObject {
+
+    @PrimaryKey
     private long id;
     private BuyerList buyerId;
     private String buyer;
-    private String incomeDate;
+    private Date incomeDate;
     private IncomeTypesList incomeTypes;
     private IncomeSourceList incomeSources;
     private ProductTypesList productTypesTypes;
@@ -24,35 +27,6 @@ public class IncomeList implements Parcelable{
     private Payer payer;
     private Recepient recepient;
 
-    protected IncomeList(Parcel in) {
-        id = in.readLong();
-        buyerId = in.readParcelable(BuyerList.class.getClassLoader());
-        buyer = in.readString();
-        incomeDate = in.readString();
-        incomeTypes = in.readParcelable(IncomeTypesList.class.getClassLoader());
-        incomeSources = in.readParcelable(IncomeSourceList.class.getClassLoader());
-        productTypesTypes = in.readParcelable(ProductTypesList.class.getClassLoader());
-        amount = in.readDouble();
-        bags = in.readLong();
-        money = in.readDouble();
-        locations = in.readParcelable(Locations.class.getClassLoader());
-        comment = in.readString();
-        measureUnit = in.readParcelable(MeasureUnit.class.getClassLoader());
-        payer = in.readParcelable(Payer.class.getClassLoader());
-        recepient = in.readParcelable(Recepient.class.getClassLoader());
-    }
-
-    public static final Creator<IncomeList> CREATOR = new Creator<IncomeList>() {
-        @Override
-        public IncomeList createFromParcel(Parcel in) {
-            return new IncomeList(in);
-        }
-
-        @Override
-        public IncomeList[] newArray(int size) {
-            return new IncomeList[size];
-        }
-    };
 
     public long getId() {
         return id;
@@ -86,11 +60,11 @@ public class IncomeList implements Parcelable{
         this.incomeTypes = incomeTypes;
     }
 
-    public String getIncomeDate() {
+    public Date getIncomeDate() {
         return incomeDate;
     }
 
-    public void setIncomeDate(String incomeDate) {
+    public void setIncomeDate(Date incomeDate) {
         this.incomeDate = incomeDate;
     }
 
@@ -174,27 +148,4 @@ public class IncomeList implements Parcelable{
         this.recepient = recepient;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(id);
-        dest.writeParcelable(buyerId, flags);
-        dest.writeString(buyer);
-        dest.writeString(incomeDate);
-        dest.writeParcelable(incomeTypes, flags);
-        dest.writeParcelable(incomeSources, flags);
-        dest.writeParcelable(productTypesTypes, flags);
-        dest.writeDouble(amount);
-        dest.writeLong(bags);
-        dest.writeDouble(money);
-        dest.writeParcelable(locations, flags);
-        dest.writeString(comment);
-        dest.writeParcelable(measureUnit, flags);
-        dest.writeParcelable(payer, flags);
-        dest.writeParcelable(recepient, flags);
-    }
 }

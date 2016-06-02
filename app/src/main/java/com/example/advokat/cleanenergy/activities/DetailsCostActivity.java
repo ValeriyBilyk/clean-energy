@@ -16,8 +16,8 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.app.App;
 import com.example.advokat.cleanenergy.entities.AccessKeyDto;
+import com.example.advokat.cleanenergy.entities.CurrentAsset;
 import com.example.advokat.cleanenergy.entities.CurrentAssetsType;
 import com.example.advokat.cleanenergy.entities.ExpenditureTypes;
 import com.example.advokat.cleanenergy.entities.ExpendituresDTO;
@@ -27,6 +27,7 @@ import com.example.advokat.cleanenergy.entities.cost.Expenditures;
 import com.example.advokat.cleanenergy.rest.ApiClient;
 import com.example.advokat.cleanenergy.rest.requests.DataRequest;
 import com.example.advokat.cleanenergy.utils.ListUtil;
+import com.example.advokat.cleanenergy.utils.PreferenceManager;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.util.Calendar;
@@ -34,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,7 +56,11 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
     private Switch changeCosts;
     private Button btnSendData;
     private boolean isEditing;
+
     private Expenditures expenditures;
+    private CurrentAsset currentAsset;
+
+    private long id;
 
     private Map<String, Integer> mapCurrentAssets;
     private Map<Long, Long> mapCurrentAssetsId;
@@ -75,15 +81,20 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
         setContentView(R.layout.activity_send_cost);
 
         setTitle("Додати");
+
+        id = getIntent().getLongExtra(Expenditures.class.getName(), -1);
+        findExpendituresById();
+        findCurrentAsset();
+        if (expenditures != null) {
+            isEditing = true;
+        }
+
         initLayout();
         initSpinners();
         createCurrentAssetsMap();
         createExpenditureMap();
         createMeasureUnit();
         createPayerMap();
-
-        expenditures = getIntent().getParcelableExtra(Expenditures.class.getName());
-        isEditing = expenditures != null;
 
         if (isEditing) {
             setTitle("Редагувати");
@@ -131,6 +142,20 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
         btnSendData.setOnClickListener(this);
     }
 
+    private void findExpendituresById() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        expenditures = realm.where(Expenditures.class).equalTo("id", id).findFirst();
+        realm.commitTransaction();
+    }
+
+    private void findCurrentAsset() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        currentAsset = realm.where(CurrentAsset.class).findFirst();
+        realm.commitTransaction();
+    }
+
     private void verifyChangeCosts() {
         if (changeCosts.isChecked()) {
             fixedCosts.setVisibility(View.VISIBLE);
@@ -162,7 +187,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
     private void createCurrentAssetsMap() {
         mapCurrentAssets = new HashMap<>();
         mapCurrentAssetsId = new HashMap<>();
-        Iterator<CurrentAssetsType> iterator = App.getCurrentAsset().getCurrentAssetsType().iterator();
+        Iterator<CurrentAssetsType> iterator = currentAsset.getCurrentAssetsType().iterator();
         long i = 0;
         while (iterator.hasNext()) {
             CurrentAssetsType currentAssetsType = iterator.next();
@@ -175,7 +200,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
     private void createPayerMap() {
         mapPayer = new HashMap<>();
         mapPayerId = new HashMap<>();
-        Iterator<Payer> iterator2 = App.getCurrentAsset().getPayer().iterator();
+        Iterator<Payer> iterator2 = currentAsset.getPayer().iterator();
         long k = 0;
         while (iterator2.hasNext()) {
             Payer payer = iterator2.next();
@@ -188,7 +213,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
     private void createExpenditureMap() {
         mapExpenditure = new HashMap<>();
         mapExpenditureId = new HashMap<>();
-        Iterator<ExpenditureTypes> iterator = App.getCurrentAsset().getExpenditureTypes().iterator();
+        Iterator<ExpenditureTypes> iterator = currentAsset.getExpenditureTypes().iterator();
         long m = 0;
         while (iterator.hasNext()) {
             ExpenditureTypes expenditureTypes = iterator.next();
@@ -201,7 +226,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
     private void createMeasureUnit() {
         mapMeasureUnit = new HashMap<>();
         mapMeasureUnitId = new HashMap<>();
-        Iterator<MeasureUnit> iterator = App.getCurrentAsset().getMeasureUnit().iterator();
+        Iterator<MeasureUnit> iterator = currentAsset.getMeasureUnit().iterator();
         long g = 0;
         while (iterator.hasNext()) {
             MeasureUnit measureUnit = iterator.next();
@@ -212,10 +237,10 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
     }
 
     private void initSpinners() {
-        initSpinnerArrayAdapter(spinnerCurrentAssets, ListUtil.getCurrentAssetsTypeNames(App.getCurrentAsset().getCurrentAssetsType()));
-        initSpinnerArrayAdapter(spinnerExpenditure, ListUtil.getExpenditureTypesNames(App.getCurrentAsset().getExpenditureTypes()));
-        initSpinnerArrayAdapter(unitOfMeasurement, ListUtil.getMeasureNames(App.getCurrentAsset().getMeasureUnit()));
-        initSpinnerArrayAdapter(payer, ListUtil.getPayers(App.getCurrentAsset().getPayer()));
+        initSpinnerArrayAdapter(spinnerCurrentAssets, ListUtil.getCurrentAssetsTypeNames(currentAsset.getCurrentAssetsType()));
+        initSpinnerArrayAdapter(spinnerExpenditure, ListUtil.getExpenditureTypesNames(currentAsset.getExpenditureTypes()));
+        initSpinnerArrayAdapter(unitOfMeasurement, ListUtil.getMeasureNames(currentAsset.getMeasureUnit()));
+        initSpinnerArrayAdapter(payer, ListUtil.getPayers(currentAsset.getPayer()));
     }
 
     private void initLayout() {
@@ -262,7 +287,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_send_data:
-                AccessKeyDto accessKeyDto = new AccessKeyDto(App.getUser().getKey());
+                AccessKeyDto accessKeyDto = new AccessKeyDto(PreferenceManager.getAccessToken());
                 ExpendituresDTO expendituresDTO;
                 double amountText;
                 double costText;

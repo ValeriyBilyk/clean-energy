@@ -19,7 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-public class ExpenditureAdapter extends RecyclerView.Adapter<ExpenditureAdapter.ViewHolder> {
+public class CostAdapter extends RecyclerView.Adapter<CostAdapter.ViewHolder> {
 
     private LayoutInflater inflater;
     private Context context;
@@ -33,14 +33,14 @@ public class ExpenditureAdapter extends RecyclerView.Adapter<ExpenditureAdapter.
     }
 
     @Override
-    public ExpenditureAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CostAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (context == null) context = parent.getContext();
         if (inflater == null) inflater = LayoutInflater.from(context);
         return new ViewHolder(inflater.inflate(R.layout.item_expenditure, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(final ExpenditureAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final CostAdapter.ViewHolder holder, int position) {
         final Expenditures expenditure = items.get(position);
         holder.textCategory.setText(String.valueOf(expenditure.getExpenditureTypesId().getName()));
         if (expenditure.getCurrentAssetsTypeId() != null) {
@@ -56,7 +56,8 @@ public class ExpenditureAdapter extends RecyclerView.Adapter<ExpenditureAdapter.
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, DetailsCostActivity.class);
-                intent.putExtra(Expenditures.class.getName(), items.get(holder.getAdapterPosition()));
+//                intent.putExtra(Expenditures.class.getName(), items.get(holder.getAdapterPosition()));
+                intent.putExtra(Expenditures.class.getName(), items.get(holder.getAdapterPosition()).getId());
                 context.startActivity(intent);
 
             }

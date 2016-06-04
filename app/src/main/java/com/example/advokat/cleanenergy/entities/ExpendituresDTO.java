@@ -13,6 +13,10 @@ public class ExpendituresDTO {
     private String nameExpenditure;
     private String dateExpenditure;
 
+    public ExpendituresDTO() {
+
+    }
+
     public ExpendituresDTO(Long currentAssets, Long measureUnitSm, double amount, double money, Long payer, String description, String dateExpenditure) {
         this.currentAssets = currentAssets;
         this.measureUnitSm = measureUnitSm;

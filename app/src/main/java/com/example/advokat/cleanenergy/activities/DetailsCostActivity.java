@@ -30,7 +30,9 @@ import com.example.advokat.cleanenergy.utils.ListUtil;
 import com.example.advokat.cleanenergy.utils.PreferenceManager;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -42,12 +44,14 @@ import retrofit2.Response;
 
 public class DetailsCostActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
 
+    private static final int COST_NOT_CREATED_NEGATIVE_ID = -1;
+
     private Spinner spinnerCurrentAssets;
     private Spinner spinnerExpenditure;
     private EditText nameOfCost;
     private Spinner unitOfMeasurement;
     private EditText amount;
-    private EditText cost;
+    private EditText money;
     private Spinner payer;
     private EditText dateOfCost;
     private EditText description;
@@ -107,13 +111,9 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                 spinnerExpenditure.setSelection(mapExpenditure.get(expenditures.getExpenditureTypesId().getName()));
             }
             verifyChangeCosts();
-            unitOfMeasurement.setSelection(mapMeasureUnit.get(expenditures.getMeasureUnit().getName()));
-            payer.setSelection(mapPayer.get(expenditures.getPayer().getName()));
-            amount.setText(String.valueOf(expenditures.getAmount()));
-            cost.setText(String.valueOf(expenditures.getMoney()));
-            dateOfCost.setText(String.valueOf(expenditures.getExpenditureDate()));
-            description.setText(String.valueOf(expenditures.getDescription()));
-
+            initCurrentCost();
+        } else {
+            dateOfCost.setText(getCurrentDate());
         }
 
         dateOfCost.setOnClickListener(new View.OnClickListener() {
@@ -138,8 +138,24 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                 }
             });
         }
-
         btnSendData.setOnClickListener(this);
+    }
+
+    private String getCurrentDate() {
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return simpleDateFormat.format(date.getTime());
+    }
+
+    private void initCurrentCost() {
+        unitOfMeasurement.setSelection(mapMeasureUnit.get(expenditures.getMeasureUnit().getName()));
+        payer.setSelection(mapPayer.get(expenditures.getPayer().getName()));
+        amount.setText(String.valueOf(expenditures.getAmount()));
+        money.setText(String.valueOf(expenditures.getMoney()));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String s = simpleDateFormat.format(expenditures.getExpenditureDate());
+        dateOfCost.setText(s);
+        description.setText(String.valueOf(expenditures.getDescription()));
     }
 
     private void findExpendituresById() {
@@ -258,7 +274,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
         nameOfCost = (EditText) findViewById(R.id.edit_text_name_of_cost);
         unitOfMeasurement = (Spinner) findViewById(R.id.unit_of_measurement);
         amount = (EditText) findViewById(R.id.edit_text_amount);
-        cost = (EditText) findViewById(R.id.edit_text_cost);
+        money = (EditText) findViewById(R.id.edit_text_cost);
         payer = (Spinner) findViewById(R.id.spinner_payer);
         dateOfCost = (EditText) findViewById(R.id.date_of_cost);
         description = (EditText) findViewById(R.id.edit_text_description);
@@ -283,151 +299,167 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
         dateOfCost.setText(date);
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.button_send_data:
-                AccessKeyDto accessKeyDto = new AccessKeyDto(PreferenceManager.getAccessToken());
-                ExpendituresDTO expendituresDTO;
-                double amountText;
-                double costText;
-                if (amount.getText().toString().equals("")) {
-                    amountText = 0;
-                } else {
-                    amountText = Double.parseDouble(String.valueOf(amount.getText()));
+    private void goToMainActivity() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+    }
+
+    private DataRequest createOrUpdateDataOfFixedCost(long id) {
+        AccessKeyDto accessKeyDto = new AccessKeyDto(PreferenceManager.getAccessToken());
+        ExpendituresDTO expendituresDTO = new ExpendituresDTO();
+        if (id != -1) {
+            expendituresDTO.setId(id);
+        }
+        expendituresDTO.setCurrentAssets(mapCurrentAssetsId.get(spinnerCurrentAssets.getSelectedItemId()));
+        expendituresDTO.setMeasureUnitSm(mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()));
+        expendituresDTO.setAmount(Double.parseDouble(amount.getText().toString()));
+        expendituresDTO.setMoney(Double.parseDouble(money.getText().toString()));
+        expendituresDTO.setPayer(mapPayerId.get(payer.getSelectedItemId()));
+        expendituresDTO.setDateExpenditure(dateOfCost.getText().toString());
+        expendituresDTO.setDescription(description.getText().toString());
+        DataRequest dataRequest = new DataRequest();
+        dataRequest.setAccessKeyDto(accessKeyDto);
+        dataRequest.setExpendituresDTO(expendituresDTO);
+        return dataRequest;
+    }
+
+    private DataRequest createOrUpdateDataOfVolatileCost(long id) {
+        AccessKeyDto accessKeyDto = new AccessKeyDto(PreferenceManager.getAccessToken());
+        ExpendituresDTO expendituresDTO = new ExpendituresDTO();
+        if (id != -1) {
+            expendituresDTO.setId(id);
+        }
+        expendituresDTO.setCategoryExpenditure(mapExpenditureId.get(spinnerExpenditure.getSelectedItemId()));
+        expendituresDTO.setNameExpenditure(nameOfCost.getText().toString());
+        expendituresDTO.setAmount(Double.parseDouble(amount.getText().toString()));
+        expendituresDTO.setMoney(Double.parseDouble(money.getText().toString()));
+        expendituresDTO.setMeasureUnitSm(mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()));
+        expendituresDTO.setPayer(mapPayerId.get(payer.getSelectedItemId()));
+        expendituresDTO.setDateExpenditure(dateOfCost.getText().toString());
+        expendituresDTO.setDescription(description.getText().toString());
+        DataRequest dataRequest = new DataRequest();
+        dataRequest.setAccessKeyDto(accessKeyDto);
+        dataRequest.setExpendituresDTO(expendituresDTO);
+        return dataRequest;
+    }
+
+    private void addVolatileCost(DataRequest dataRequest) {
+        ApiClient.retrofit().getMainService().sendDataParmenent(dataRequest).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful()) {
+                    goToMainActivity();
+                    Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
                 }
-                if (cost.getText().toString().equals("")) {
-                    costText = 0;
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void addFixedCost(DataRequest dataRequest) {
+        ApiClient.retrofit().getMainService().sendDataConstant(dataRequest).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful()) {
+                    goToMainActivity();
+                    Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void editFixedCost(DataRequest dataRequest) {
+        ApiClient.retrofit().getMainService().editConstantData(dataRequest).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful()) {
+                    goToMainActivity();
+                    Toast.makeText(getApplicationContext(), "Успішно", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "Не відправлено", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void editVolatileCost(DataRequest dataRequest) {
+        ApiClient.retrofit().getMainService().editNotParmenent(dataRequest).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful()) {
+                    goToMainActivity();
+                    Toast.makeText(getApplicationContext(), "Успішно", Toast.LENGTH_SHORT).show();
                 } else {
-                    costText = Double.parseDouble(String.valueOf(cost.getText()));
+                    Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private boolean verifyFixedCost() {
+        if (amount.getText().toString().equals("")) {
+            amount.setText("1");
+        }
+        if (money.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "Перевірте поле - Вартість", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean verifyVolatileCost() {
+        if (amount.getText().toString().equals("")) {
+            amount.setText("1");
+        }
+        if (nameOfCost.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "Перевірте поле - Назва витрати", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (money.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "Перевірте поле - Вартість", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_send_data:
+                if (changeCosts.isChecked()) {
+                    if (!verifyFixedCost()) return;
+                } else {
+                    if (!verifyVolatileCost()) return;
                 }
                 if (!isEditing) {
                     if (changeCosts.isChecked()) {
-                        expendituresDTO = new ExpendituresDTO(
-                                mapCurrentAssetsId.get(spinnerCurrentAssets.getSelectedItemId()),
-                                mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
-                                amountText,
-                                costText,
-                                mapPayerId.get(payer.getSelectedItemId()),
-                                description.getText().toString(),
-                                dateOfCost.getText().toString()
-                        );
+                        addFixedCost(createOrUpdateDataOfFixedCost(COST_NOT_CREATED_NEGATIVE_ID));
                     } else {
-                        expendituresDTO = new ExpendituresDTO(
-                                mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
-                                amountText,
-                                costText,
-                                mapPayerId.get(payer.getSelectedItemId()),
-                                description.getText().toString(),
-                                mapExpenditureId.get(spinnerExpenditure.getSelectedItemId()),
-                                nameOfCost.getText().toString(),
-                                dateOfCost.getText().toString()
-                        );
-                    }
-                    DataRequest dataRequest = new DataRequest();
-                    dataRequest.setAccessKeyDto(accessKeyDto);
-                    dataRequest.setExpendituresDTO(expendituresDTO);
-                    if (changeCosts.isChecked()) {
-                        ApiClient.retrofit().getMainService().sendDataConstant(dataRequest).enqueue(new Callback<Integer>() {
-                            @Override
-                            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                                if (response.isSuccessful()) {
-                                    goToMainActivity();
-                                    Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Integer> call, Throwable t) {
-                                Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    } else {
-                        ApiClient.retrofit().getMainService().sendDataParmenent(dataRequest).enqueue(new Callback<Integer>() {
-                            @Override
-                            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                                if (response.isSuccessful()) {
-                                    goToMainActivity();
-                                    Toast.makeText(getApplicationContext(), "Відправлено", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Integer> call, Throwable t) {
-                                Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        addVolatileCost(createOrUpdateDataOfVolatileCost(COST_NOT_CREATED_NEGATIVE_ID));
                     }
                 } else {
                     if (changeCosts.isChecked()) {
-                        expendituresDTO = new ExpendituresDTO(
-                                expenditures.getId(),
-                                mapCurrentAssetsId.get(spinnerCurrentAssets.getSelectedItemId()),
-                                mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
-                                amountText,
-                                costText,
-                                mapPayerId.get(payer.getSelectedItemId()),
-                                description.getText().toString(),
-                                dateOfCost.getText().toString()
-                        );
+                        editFixedCost(createOrUpdateDataOfFixedCost(expenditures.getId()));
                     } else {
-                        expendituresDTO = new ExpendituresDTO(
-                                expenditures.getId(),
-                                mapMeasureUnitId.get(unitOfMeasurement.getSelectedItemId()),
-                                amountText,
-                                costText,
-                                mapPayerId.get(payer.getSelectedItemId()),
-                                description.getText().toString(),
-                                mapExpenditureId.get(spinnerExpenditure.getSelectedItemId()),
-                                nameOfCost.getText().toString(),
-                                dateOfCost.getText().toString()
-                        );
-                    }
-                    DataRequest dataRequest = new DataRequest();
-                    dataRequest.setAccessKeyDto(accessKeyDto);
-                    dataRequest.setExpendituresDTO(expendituresDTO);
-                    if (changeCosts.isChecked()) {
-                        ApiClient.retrofit().getMainService().editConstantData(dataRequest).enqueue(new Callback<Integer>() {
-                            @Override
-                            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                                if (response.isSuccessful()) {
-                                    goToMainActivity();
-                                    Toast.makeText(getApplicationContext(), "Успішно", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Integer> call, Throwable t) {
-
-                            }
-                        });
-                    } else {
-                        ApiClient.retrofit().getMainService().editNotParmenent(dataRequest).enqueue(new Callback<Integer>() {
-                            @Override
-                            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                                if (response.isSuccessful()) {
-                                    goToMainActivity();
-                                    Toast.makeText(getApplicationContext(), "Успішно", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<Integer> call, Throwable t) {
-
-                            }
-                        });
+                        editVolatileCost(createOrUpdateDataOfVolatileCost(expenditures.getId()));
                     }
                 }
                 break;
         }
-    }
-
-    private void goToMainActivity() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(intent);
     }
 }

@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,6 +24,7 @@ import com.example.advokat.cleanenergy.entities.cost.Expenditures;
 import com.example.advokat.cleanenergy.rest.ApiClient;
 import com.example.advokat.cleanenergy.rest.requests.AuthRequest;
 import com.example.advokat.cleanenergy.utils.PreferenceManager;
+import com.example.advokat.cleanenergy.utils.Utils;
 
 import java.io.IOException;
 import java.util.List;
@@ -62,8 +62,10 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         swipeRefreshLayout.setOnRefreshListener(this);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+       /* recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));*/
+
+        Utils.addHorizontalDivider(recyclerView, getContext(), Utils.MARGIN_LEFT_0, Utils.MARGIN_RIGHT_0);
 
         fabAddData = (FloatingActionButton) view.findViewById(R.id.fab_add_data);
         fabAddData.setOnClickListener(this);
@@ -71,10 +73,14 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         adapter = new CostAdapter();
         recyclerView.setAdapter(adapter);
 
-        if (realm.where(Expenditures.class).findFirst() == null) {
-            loadItems();
-            loadCategoryItems();
-        }
+//        if (realm.where(Expenditures.class).findFirst() == null) {
+        loadItems();
+        loadCategoryItems();
+//        } else {
+          /*  List<Expenditures> expenditures = realm.where(Expenditures.class).findAll();
+            adapter.addAll(expenditures);
+            progressBar.setVisibility(View.GONE);
+        }*/
     }
 
     private void loadItems() {

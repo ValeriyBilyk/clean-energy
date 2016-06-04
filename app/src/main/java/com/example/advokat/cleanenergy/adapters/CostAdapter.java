@@ -12,6 +12,7 @@ import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DetailsCostActivity;
 import com.example.advokat.cleanenergy.entities.cost.Expenditures;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,13 +45,25 @@ public class CostAdapter extends RecyclerView.Adapter<CostAdapter.ViewHolder> {
         final Expenditures expenditure = items.get(position);
         holder.textCategory.setText(String.valueOf(expenditure.getExpenditureTypesId().getName()));
         if (expenditure.getCurrentAssetsTypeId() != null) {
-            holder.textTypeOfCost.setText(String.valueOf(expenditure.getCurrentAssetsTypeId().getName()));
+            holder.textTypeOfCostAndCountAndMeasure.setText(String.format(Locale.getDefault(), "%s, %.2f %s"
+                    , expenditure.getCurrentAssetsTypeId().getName()
+                    , expenditure.getAmount()
+                    , expenditure.getMeasureUnit().getName()));
         } else {
-            holder.textTypeOfCost.setText(String.valueOf(expenditure.getComment()));
+            holder.textTypeOfCostAndCountAndMeasure.setText(String.format(Locale.getDefault(), "%s, %.2f %s"
+                    , expenditure.getComment()
+                    , expenditure.getAmount()
+                    , expenditure.getMeasureUnit().getName()));
         }
-        holder.textPayer.setText(String.valueOf(expenditure.getPayer().getName()));
-        holder.textCountAndDate.setText(String.format(Locale.getDefault(), "%.2f, %s, %s", expenditure.getAmount(), expenditure.getMeasureUnit().getName(), expenditure.getExpenditureDate()));
+        holder.textPayerAndCount.setText(String.format(Locale.getDefault(), "%s, %.2f грн"
+                , expenditure.getPayer().getName()
+                , expenditure.getMoney()));
+
         holder.textDescription.setText(expenditure.getDescription());
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        String s = simpleDateFormat.format(expenditure.getExpenditureDate());
+        holder.textDate.setText(s);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,16 +133,17 @@ public class CostAdapter extends RecyclerView.Adapter<CostAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         View itemView;
-        TextView textCategory, textTypeOfCost, textPayer, textCountAndDate, textDescription;
+        /*  TextView textCategory, textTypeOfCost, textPayer, textCountAndDate, textDescription;*/
+        TextView textCategory, textTypeOfCostAndCountAndMeasure, textPayerAndCount, textDescription, textDate;
 
         public ViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
             textCategory = (TextView) itemView.findViewById(R.id.text_category);
-            textTypeOfCost = (TextView) itemView.findViewById(R.id.text_type_of_cost);
-            textPayer = (TextView) itemView.findViewById(R.id.text_payer);
-            textCountAndDate = (TextView) itemView.findViewById(R.id.text_count_and_date);
+            textTypeOfCostAndCountAndMeasure = (TextView) itemView.findViewById(R.id.text_type_of_cost_count_measure);
+            textPayerAndCount = (TextView) itemView.findViewById(R.id.text_payer_count);
             textDescription = (TextView) itemView.findViewById(R.id.text_description);
+            textDate = (TextView) itemView.findViewById(R.id.text_date);
         }
     }
 }

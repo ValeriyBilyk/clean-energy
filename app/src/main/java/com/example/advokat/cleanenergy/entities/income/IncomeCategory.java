@@ -1,81 +1,64 @@
 package com.example.advokat.cleanenergy.entities.income;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-import java.util.List;
+public class IncomeCategory extends RealmObject {
 
-public class IncomeCategory implements Parcelable {
+    @PrimaryKey
+    private long id;
+    private RealmList<BuyerList> buyerList;
+    private RealmList<LocationsTypesList> locationsTypesList;
+    private RealmList<IncomeTypesList> incomeTypesList;
+    private RealmList<IncomeSourceList> incomeSourceList;
+    private RealmList<ProductTypesList> productTypesList;
 
-    private List<BuyerList> buyerList;
-    private List<LocationsTypesList> locationsTypesList;
-    private List<IncomeTypesList> incomeTypesList;
-    private List<IncomeSourceList> incomeSourceList;
-    private List<ProductTypesList> productTypesList;
-
-    protected IncomeCategory(Parcel in) {
-        buyerList = in.createTypedArrayList(BuyerList.CREATOR);
+    public long getId() {
+        return id;
     }
 
-    public static final Creator<IncomeCategory> CREATOR = new Creator<IncomeCategory>() {
-        @Override
-        public IncomeCategory createFromParcel(Parcel in) {
-            return new IncomeCategory(in);
-        }
+    public void setId(long id) {
+        this.id = id;
+    }
 
-        @Override
-        public IncomeCategory[] newArray(int size) {
-            return new IncomeCategory[size];
-        }
-    };
-
-    public List<BuyerList> getBuyerList() {
+    public RealmList<BuyerList> getBuyerList() {
         return buyerList;
     }
 
-    public void setBuyerList(List<BuyerList> buyerList) {
+    public void setBuyerList(RealmList<BuyerList> buyerList) {
         this.buyerList = buyerList;
     }
 
-    public List<LocationsTypesList> getLocationsTypesList() {
+    public RealmList<LocationsTypesList> getLocationsTypesList() {
         return locationsTypesList;
     }
 
-    public void setLocationsTypesList(List<LocationsTypesList> locationsTypesList) {
+    public void setLocationsTypesList(RealmList<LocationsTypesList> locationsTypesList) {
         this.locationsTypesList = locationsTypesList;
     }
 
-    public List<IncomeTypesList> getIncomeTypesList() {
+    public RealmList<IncomeTypesList> getIncomeTypesList() {
         return incomeTypesList;
     }
 
-    public void setIncomeTypesList(List<IncomeTypesList> incomeTypesList) {
+    public void setIncomeTypesList(RealmList<IncomeTypesList> incomeTypesList) {
         this.incomeTypesList = incomeTypesList;
     }
 
-    public List<IncomeSourceList> getIncomeSourceList() {
+    public RealmList<IncomeSourceList> getIncomeSourceList() {
         return incomeSourceList;
     }
 
-    public void setIncomeSourceList(List<IncomeSourceList> incomeSourceList) {
+    public void setIncomeSourceList(RealmList<IncomeSourceList> incomeSourceList) {
         this.incomeSourceList = incomeSourceList;
     }
 
-    public List<ProductTypesList> getProductTypesList() {
+    public RealmList<ProductTypesList> getProductTypesList() {
         return productTypesList;
     }
 
-    public void setProductTypesList(List<ProductTypesList> productTypesList) {
+    public void setProductTypesList(RealmList<ProductTypesList> productTypesList) {
         this.productTypesList = productTypesList;
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeTypedList(buyerList);
     }
 }

@@ -74,7 +74,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
                     @Override
                     public void onResponse(Call<IncomeCategory> call, Response<IncomeCategory> response) {
                         if (response.isSuccessful()) {
-
+                            copyAllIncomesCategoriesToRealm(response.body());
                         }
                         swipeRefreshLayout.setRefreshing(false);
                         progressBar.setVisibility(View.GONE);
@@ -94,6 +94,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
             @Override
             public void onResponse(Call<Incomes> call, Response<Incomes> response) {
                 if (response.isSuccessful()) {
+                    copyAllIncomesToRealm(response.body().getIncomeList());
                     adapter.addAll(response.body().getIncomeList());
                 }
 
@@ -110,25 +111,17 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
         });
     }
 
-    /*private void copyAllExpendituresToRealm(List<Expenditures> expendituresList) {
-        realm.beginTransaction();
-        for (Expenditures expenditures : expendituresList) {
-            realm.copyToRealmOrUpdate(expenditures);
-        }
-        realm.commitTransaction();
-    }
-
-    private void copyAllExpendituresCategoriesToRealm(CurrentAsset currentAsset) {
-        realm.beginTransaction();
-        realm.copyToRealmOrUpdate(currentAsset);
-        realm.commitTransaction();
-    }*/
-
     private void copyAllIncomesToRealm(List<IncomeList> incomeLists) {
         realm.beginTransaction();
         for (IncomeList incomeList : incomeLists) {
             realm.copyToRealmOrUpdate(incomeList);
         }
+        realm.commitTransaction();
+    }
+
+    private void copyAllIncomesCategoriesToRealm(IncomeCategory incomeCategory) {
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(incomeCategory);
         realm.commitTransaction();
     }
 

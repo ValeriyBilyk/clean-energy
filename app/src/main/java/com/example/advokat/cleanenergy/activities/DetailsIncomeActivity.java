@@ -425,34 +425,6 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
         AccessKeyDto accessKeyDto = new AccessKeyDto(PreferenceManager.getAccessToken());
         IncomeDTO incomeDTO = new IncomeDTO();
 
-        /*incomeDTO = new IncomeDTO(
-                    amountText,
-                    Double.parseDouble(editTextAmountOfBoxes.getText().toString()),
-                    mapConstantBuyerId.get(spinnerConstantBuyer.getSelectedItemId()),
-                    editTextDescription.getText().toString(),
-                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
-                    mapOperationId.get(spinnerOperation.getSelectedItemId()),
-                    mapTypeOfOperationId.get(spinnerTypeOfOperation.getSelectedItemId()),
-                    mapMeasureUnitId.get(spinnerUnitOfMeasurement.getSelectedItemId()),
-                    costText,
-                    mapTypeOfIncomeId.get(spinnerTypeOfIncome.getSelectedItemId()),
-                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
-                    dateOfCost.getText().toString()
-
-                    private long id;
-    private double amount;
-    private double bags;
-    private long buyerId;
-    private String comment;
-    private long payer;
-    private long incomeSourceId;
-    private long incomeTypeId;
-    private long measureUnitId;
-    private double money;
-    private long productTypeId;
-    private long recepient;
-    private String incomeDate;
-            );*/
         if (id != NEW_INCOME) {
             incomeDTO.setId(id);
         }
@@ -543,88 +515,5 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
             }
         });
     }
-
-    /*@Override
-    public void onClick(View v) {
-        AccessKeyDto accessKeyDto = new AccessKeyDto(PreferenceManager.getAccessToken());
-        IncomeDTO incomeDTO = null;
-        double amountText;
-        double costText;
-        if (editTextAmount.getText().toString().equals("")) {
-            amountText = 0;
-        } else {
-            amountText = Double.parseDouble(String.valueOf(editTextAmount.getText()));
-        }
-        if (editTextCost.getText().toString().equals("")) {
-            costText = 0;
-        } else {
-            costText = Double.parseDouble(String.valueOf(editTextCost.getText()));
-        }
-        if (!isEditing) {
-            incomeDTO = new IncomeDTO(
-                    amountText,
-                    Double.parseDouble(editTextAmountOfBoxes.getText().toString()),
-                    mapConstantBuyerId.get(spinnerConstantBuyer.getSelectedItemId()),
-                    editTextDescription.getText().toString(),
-                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
-                    mapOperationId.get(spinnerOperation.getSelectedItemId()),
-                    mapTypeOfOperationId.get(spinnerTypeOfOperation.getSelectedItemId()),
-                    mapMeasureUnitId.get(spinnerUnitOfMeasurement.getSelectedItemId()),
-                    costText,
-                    mapTypeOfIncomeId.get(spinnerTypeOfIncome.getSelectedItemId()),
-                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
-                    dateOfCost.getText().toString()
-            );
-            IncomeRequest incomeRequest = new IncomeRequest();
-            incomeRequest.setIncomeDTO(incomeDTO);
-            incomeRequest.setAccessKeyDto(accessKeyDto);
-            ApiClient.retrofit().getMainService().sendIncome(incomeRequest).enqueue(new Callback<Integer>() {
-                @Override
-                public void onResponse(Call<Integer> call, Response<Integer> response) {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Integer> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            incomeDTO = new IncomeDTO(
-                    incomeList.getId(),
-                    amountText,
-                    Double.parseDouble(editTextAmountOfBoxes.getText().toString()),
-                    mapConstantBuyerId.get(spinnerConstantBuyer.getSelectedItemId()),
-                    editTextDescription.getText().toString(),
-                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
-                    mapOperationId.get(spinnerOperation.getSelectedItemId()),
-                    mapTypeOfOperationId.get(spinnerTypeOfOperation.getSelectedItemId()),
-                    mapMeasureUnitId.get(spinnerUnitOfMeasurement.getSelectedItemId()),
-                    costText,
-                    mapTypeOfIncomeId.get(spinnerTypeOfIncome.getSelectedItemId()),
-                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
-                    dateOfCost.getText().toString()
-            );
-            IncomeRequest incomeRequest = new IncomeRequest();
-            incomeRequest.setIncomeDTO(incomeDTO);
-            incomeRequest.setAccessKeyDto(accessKeyDto);
-            ApiClient.retrofit().getMainService().updateIncome(incomeRequest).enqueue(new Callback<Integer>() {
-                @Override
-                public void onResponse(Call<Integer> call, Response<Integer> response) {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "update", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Integer> call, Throwable t) {
-                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }*/
-
 
 }

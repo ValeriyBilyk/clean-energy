@@ -1,4 +1,3 @@
-/*
 package com.example.advokat.cleanenergy.activities;
 
 import android.content.Intent;
@@ -7,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -17,12 +17,13 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.app.App;
 import com.example.advokat.cleanenergy.entities.AccessKeyDto;
+import com.example.advokat.cleanenergy.entities.CurrentAsset;
 import com.example.advokat.cleanenergy.entities.IncomeDTO;
 import com.example.advokat.cleanenergy.entities.MeasureUnit;
 import com.example.advokat.cleanenergy.entities.Payer;
 import com.example.advokat.cleanenergy.entities.income.BuyerList;
+import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
 import com.example.advokat.cleanenergy.entities.income.IncomeList;
 import com.example.advokat.cleanenergy.entities.income.IncomeSourceList;
 import com.example.advokat.cleanenergy.entities.income.IncomeTypesList;
@@ -30,18 +31,27 @@ import com.example.advokat.cleanenergy.entities.income.ProductTypesList;
 import com.example.advokat.cleanenergy.rest.ApiClient;
 import com.example.advokat.cleanenergy.rest.requests.IncomeRequest;
 import com.example.advokat.cleanenergy.utils.ListUtil;
+import com.example.advokat.cleanenergy.utils.PreferenceManager;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DetailsIncomeActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, View.OnClickListener {
+
+    private static final int OPERATION_ID_1 = 1;
+    private static final int OPERATION_ID_5 = 5;
+
+    private static final int NEW_INCOME = -1;
 
     private Spinner spinnerOperation;
     private Spinner spinnerTypeOfOperation;
@@ -60,8 +70,13 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
     private EditText dateOfCost;
     private EditText editTextDescription;
     private Button sendData;
+
+    private CurrentAsset currentAsset;
     private IncomeList incomeList;
+    private IncomeCategory incomeCategory;
+
     private boolean isEditing;
+    private long id;
 
     private Map<String, Integer> mapOperation;
     private Map<Long, Long> mapOperationId;
@@ -87,6 +102,12 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
         setContentView(R.layout.activity_send_income);
 
         setTitle("Додати");
+
+        id = getIntent().getLongExtra(IncomeList.class.getName(), -1);
+        findIncomeByIdInRealm(id);
+        findIncomeCategoryInRealm();
+        findCurrentAsset();
+
         initLayout();
         initSpinners();
         createMeasureUnitMap();
@@ -96,8 +117,9 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
         createTypeOfIncomeMap();
         createTypeOfOperationMap();
 
-        incomeList = getIntent().getParcelableExtra(IncomeList.class.getName());
-        isEditing = incomeList != null;
+        if (incomeList != null) {
+            isEditing = true;
+        }
 
         if (isEditing) {
             setTitle("Редагувати");
@@ -110,20 +132,9 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
                 editTextLocation.setText(incomeList.getLocations().getName());
             }
             verifyChangeIncome();
-            spinnerOperation.setSelection(mapOperation.get(incomeList.getIncomeSources().getName()));
-            spinnerTypeOfOperation.setSelection(mapTypeOfOperation.get(incomeList.getIncomeTypes().getName()));
-            if (incomeList.getMeasureUnit() != null) {
-                spinnerUnitOfMeasurement.setSelection(mapMeasureUnit.get(incomeList.getMeasureUnit().getName()));
-            }
-            if (incomeList.getProductTypesTypes() != null) {
-                spinnerTypeOfIncome.setSelection(mapTypeOfIncome.get(incomeList.getProductTypesTypes().getName()));
-            }
-            spinnerReceiverMoney.setSelection(mapReceiverMoney.get(incomeList.getPayer().getName()));
-            editTextAmount.setText(String.valueOf(incomeList.getAmount()));
-            editTextCost.setText(String.valueOf(incomeList.getMoney()));
-            dateOfCost.setText(incomeList.getIncomeDate());
-            editTextAmountOfBoxes.setText(String.valueOf(incomeList.getBags()));
-            editTextDescription.setText(incomeList.getComment());
+            initCurrentIncome();
+        } else {
+            dateOfCost.setText(getCurrentDate());
         }
 
         if ((switchIncome != null) && (layoutConstantBuyer != null) && (layoutVolatileBuyer != null)) {
@@ -150,6 +161,79 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
         });
 
         sendData.setOnClickListener(this);
+        spinnerOperation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+               /* String s = String.valueOf(mapOperationId.get((long)i));
+                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();*/
+                verifyOperationUI(mapOperationId.get((long) i));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    private void verifyOperationUI(long id) {
+        if (id == OPERATION_ID_1) {
+            spinnerTypeOfIncome.setEnabled(true);
+            editTextAmount.setEnabled(true);
+            spinnerUnitOfMeasurement.setEnabled(true);
+            editTextAmountOfBoxes.setEnabled(true);
+            editTextAmountOfBoxes.setEnabled(true);
+        }
+
+        if ((id != OPERATION_ID_1) && (id != OPERATION_ID_5)) {
+            spinnerTypeOfIncome.setEnabled(false);
+            editTextAmount.setEnabled(false);
+            spinnerUnitOfMeasurement.setEnabled(false);
+            editTextAmountOfBoxes.setEnabled(false);
+        } else if (id == OPERATION_ID_5) {
+            editTextAmount.setEnabled(true);
+            editTextAmountOfBoxes.setEnabled(false);
+        }
+    }
+
+    private void initCurrentIncome() {
+        spinnerOperation.setSelection(mapOperation.get(incomeList.getIncomeSources().getName()));
+        spinnerTypeOfOperation.setSelection(mapTypeOfOperation.get(incomeList.getIncomeTypes().getName()));
+        if (incomeList.getMeasureUnit() != null) {
+            spinnerUnitOfMeasurement.setSelection(mapMeasureUnit.get(incomeList.getMeasureUnit().getName()));
+        }
+        if (incomeList.getProductTypesTypes() != null) {
+            spinnerTypeOfIncome.setSelection(mapTypeOfIncome.get(incomeList.getProductTypesTypes().getName()));
+        }
+        spinnerReceiverMoney.setSelection(mapReceiverMoney.get(incomeList.getPayer().getName()));
+        editTextAmount.setText(String.valueOf(incomeList.getAmount()));
+        editTextCost.setText(String.valueOf(incomeList.getMoney()));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String s = simpleDateFormat.format(incomeList.getIncomeDate());
+        dateOfCost.setText(s);
+        editTextAmountOfBoxes.setText(String.valueOf(incomeList.getBags()));
+        editTextDescription.setText(incomeList.getComment());
+    }
+
+    private void findCurrentAsset() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        currentAsset = realm.where(CurrentAsset.class).findFirst();
+        realm.commitTransaction();
+    }
+
+    private void findIncomeByIdInRealm(long id) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        incomeList = realm.where(IncomeList.class).equalTo("id", id).findFirst();
+        realm.commitTransaction();
+    }
+
+    private void findIncomeCategoryInRealm() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        incomeCategory = realm.where(IncomeCategory.class).findFirst();
+        realm.commitTransaction();
     }
 
     private void verifyChangeIncome() {
@@ -187,16 +271,16 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
         editTextAmountOfBoxes = (EditText) findViewById(R.id.edit_text_amount_of_boxes);
         dateOfCost = (EditText) findViewById(R.id.date_of_cost);
         editTextDescription = (EditText) findViewById(R.id.edit_text_description);
-        sendData = (Button) findViewById(R.id.button_send_data);
+        sendData = (Button) findViewById(R.id.button_send_data_income);
     }
 
     private void initSpinners() {
-        initSpinnerArrayAdapter(spinnerConstantBuyer, ListUtil.getBuyers(App.getIncomeCategory().getBuyerList()));
-        initSpinnerArrayAdapter(spinnerOperation, ListUtil.getIncomeSources(App.getIncomeCategory().getIncomeSourceList()));
-        initSpinnerArrayAdapter(spinnerReceiverMoney, ListUtil.getPayers(App.getCurrentAsset().getPayer()));
-        initSpinnerArrayAdapter(spinnerTypeOfOperation, ListUtil.getIncomeTypes(App.getIncomeCategory().getIncomeTypesList()));
-        initSpinnerArrayAdapter(spinnerTypeOfIncome, ListUtil.getProductTypes(App.getIncomeCategory().getProductTypesList()));
-        initSpinnerArrayAdapter(spinnerUnitOfMeasurement, ListUtil.getMeasureNames(App.getCurrentAsset().getMeasureUnit()));
+        initSpinnerArrayAdapter(spinnerConstantBuyer, ListUtil.getBuyers(incomeCategory.getBuyerList()));
+        initSpinnerArrayAdapter(spinnerOperation, ListUtil.getIncomeSources(incomeCategory.getIncomeSourceList()));
+        initSpinnerArrayAdapter(spinnerReceiverMoney, ListUtil.getPayers(currentAsset.getPayer()));
+        initSpinnerArrayAdapter(spinnerTypeOfOperation, ListUtil.getIncomeTypes(incomeCategory.getIncomeTypesList()));
+        initSpinnerArrayAdapter(spinnerTypeOfIncome, ListUtil.getProductTypes(incomeCategory.getProductTypesList()));
+        initSpinnerArrayAdapter(spinnerUnitOfMeasurement, ListUtil.getMeasureNames(currentAsset.getMeasureUnit()));
     }
 
     private void initSpinnerArrayAdapter(Spinner spinner, String[] dataAdapter) {
@@ -207,7 +291,7 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
     private void createMeasureUnitMap() {
         mapMeasureUnit = new HashMap<>();
         mapMeasureUnitId = new HashMap<>();
-        Iterator<MeasureUnit> iterator = App.getCurrentAsset().getMeasureUnit().iterator();
+        Iterator<MeasureUnit> iterator = currentAsset.getMeasureUnit().iterator();
         long g = 0;
         while (iterator.hasNext()) {
             MeasureUnit measureUnit = iterator.next();
@@ -220,7 +304,7 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
     private void createOperationMap() {
         mapOperation = new HashMap<>();
         mapOperationId = new HashMap<>();
-        Iterator<IncomeSourceList> iterator = App.getIncomeCategory().getIncomeSourceList().iterator();
+        Iterator<IncomeSourceList> iterator = incomeCategory.getIncomeSourceList().iterator();
         long i = 0;
         while (iterator.hasNext()) {
             IncomeSourceList sourceList = iterator.next();
@@ -233,7 +317,7 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
     private void createTypeOfOperationMap() {
         mapTypeOfOperation = new HashMap<>();
         mapTypeOfOperationId = new HashMap<>();
-        Iterator<IncomeTypesList> iterator = App.getIncomeCategory().getIncomeTypesList().iterator();
+        Iterator<IncomeTypesList> iterator = incomeCategory.getIncomeTypesList().iterator();
         long i = 0;
         while (iterator.hasNext()) {
             IncomeTypesList typesList = iterator.next();
@@ -246,7 +330,7 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
     private void createTypeOfIncomeMap() {
         mapTypeOfIncome = new HashMap<>();
         mapTypeOfIncomeId = new HashMap<>();
-        Iterator<ProductTypesList> iterator = App.getIncomeCategory().getProductTypesList().iterator();
+        Iterator<ProductTypesList> iterator = incomeCategory.getProductTypesList().iterator();
         long i = 0;
         while (iterator.hasNext()) {
             ProductTypesList productTypesList = iterator.next();
@@ -259,7 +343,7 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
     private void createConstantBuyerMap() {
         mapConstantBuyer = new HashMap<>();
         mapConstantBuyerId = new HashMap<>();
-        Iterator<BuyerList> iterator = App.getIncomeCategory().getBuyerList().iterator();
+        Iterator<BuyerList> iterator = incomeCategory.getBuyerList().iterator();
         long i = 0;
         while (iterator.hasNext()) {
             BuyerList buyerList = iterator.next();
@@ -272,7 +356,7 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
     private void createReceiverMoneyMap() {
         mapReceiverMoney = new HashMap<>();
         mapReceiverMoneyId = new HashMap<>();
-        Iterator<Payer> iterator = App.getCurrentAsset().getPayer().iterator();
+        Iterator<Payer> iterator = currentAsset.getPayer().iterator();
         long i = 0;
         while (iterator.hasNext()) {
             Payer payer = iterator.next();
@@ -317,8 +401,152 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
     }
 
     @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.button_send_data_income:
+                if (!verifyIncomeFields(mapOperationId.get(spinnerOperation.getSelectedItemId())))
+                    return;
+                if (!isEditing) {
+                    addIncome(createIncome(NEW_INCOME));
+                } else {
+                    updateIncome(createIncome(incomeList.getId()));
+                }
+                break;
+        }
+    }
+
+    private String getCurrentDate() {
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return simpleDateFormat.format(date.getTime());
+    }
+
+    private IncomeRequest createIncome(long id) {
+        AccessKeyDto accessKeyDto = new AccessKeyDto(PreferenceManager.getAccessToken());
+        IncomeDTO incomeDTO = new IncomeDTO();
+
+        /*incomeDTO = new IncomeDTO(
+                    amountText,
+                    Double.parseDouble(editTextAmountOfBoxes.getText().toString()),
+                    mapConstantBuyerId.get(spinnerConstantBuyer.getSelectedItemId()),
+                    editTextDescription.getText().toString(),
+                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
+                    mapOperationId.get(spinnerOperation.getSelectedItemId()),
+                    mapTypeOfOperationId.get(spinnerTypeOfOperation.getSelectedItemId()),
+                    mapMeasureUnitId.get(spinnerUnitOfMeasurement.getSelectedItemId()),
+                    costText,
+                    mapTypeOfIncomeId.get(spinnerTypeOfIncome.getSelectedItemId()),
+                    mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()),
+                    dateOfCost.getText().toString()
+
+                    private long id;
+    private double amount;
+    private double bags;
+    private long buyerId;
+    private String comment;
+    private long payer;
+    private long incomeSourceId;
+    private long incomeTypeId;
+    private long measureUnitId;
+    private double money;
+    private long productTypeId;
+    private long recepient;
+    private String incomeDate;
+            );*/
+        if (id != NEW_INCOME) {
+            incomeDTO.setId(id);
+        }
+
+        incomeDTO.setAmount(Double.parseDouble(editTextAmount.getText().toString()));
+        incomeDTO.setBags(Double.parseDouble(editTextAmountOfBoxes.getText().toString()));
+        incomeDTO.setBuyerId(mapConstantBuyerId.get(spinnerConstantBuyer.getSelectedItemId()));
+        incomeDTO.setComment(editTextDescription.getText().toString());
+        incomeDTO.setPayer(mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()));
+        incomeDTO.setIncomeSourceId(mapOperationId.get(spinnerOperation.getSelectedItemId()));
+        incomeDTO.setIncomeTypeId(mapTypeOfOperationId.get(spinnerTypeOfOperation.getSelectedItemId()));
+        incomeDTO.setMeasureUnitId(mapMeasureUnitId.get(spinnerUnitOfMeasurement.getSelectedItemId()));
+        incomeDTO.setMoney(Double.parseDouble(String.valueOf(editTextCost.getText())));
+        incomeDTO.setProductTypeId(mapTypeOfIncomeId.get(spinnerTypeOfIncome.getSelectedItemId()));
+        incomeDTO.setRecepient(mapReceiverMoneyId.get(spinnerReceiverMoney.getSelectedItemId()));
+        incomeDTO.setIncomeDate(dateOfCost.getText().toString());
+
+        IncomeRequest incomeRequest = new IncomeRequest();
+        incomeRequest.setIncomeDTO(incomeDTO);
+        incomeRequest.setAccessKeyDto(accessKeyDto);
+
+        return incomeRequest;
+    }
+
+    private void updateIncome(IncomeRequest incomeRequest) {
+        ApiClient.retrofit().getMainService().updateIncome(incomeRequest).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getApplicationContext(), "update", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private boolean verifyIncomeFields(long id) {
+        if (id == OPERATION_ID_1) {
+            if (editTextAmount.getText().toString().equals("")) {
+                editTextAmount.setText("1");
+            }
+
+            if (editTextAmountOfBoxes.getText().toString().equals("")) {
+                Toast.makeText(getApplicationContext(), "Перевірте поле - Упаковок", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        }
+
+        if ((id != OPERATION_ID_1) && (id != OPERATION_ID_5)) {
+            if (!editTextAmount.isEnabled()) {
+                editTextAmount.setText("1");
+            }
+            if (!editTextAmountOfBoxes.isEnabled()) {
+                editTextAmountOfBoxes.setText("1");
+            }
+
+        }
+
+        if (id == OPERATION_ID_5) {
+            if (editTextAmount.getText().toString().equals("")) {
+                editTextAmount.setText("1");
+            }
+        }
+
+        if (editTextCost.getText().toString().equals("")) {
+            Toast.makeText(getApplicationContext(), "Перевірте поле - Вартість", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void addIncome(IncomeRequest incomeRequest) {
+        ApiClient.retrofit().getMainService().sendIncome(incomeRequest).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    /*@Override
     public void onClick(View v) {
-        AccessKeyDto accessKeyDto = new AccessKeyDto(App.getUser().getKey());
+        AccessKeyDto accessKeyDto = new AccessKeyDto(PreferenceManager.getAccessToken());
         IncomeDTO incomeDTO = null;
         double amountText;
         double costText;
@@ -396,8 +624,7 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
                 }
             });
         }
+    }*/
 
 
-    }
 }
-*/

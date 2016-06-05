@@ -45,17 +45,17 @@ public class CostAdapter extends RecyclerView.Adapter<CostAdapter.ViewHolder> {
         final Expenditures expenditure = items.get(position);
         holder.textCategory.setText(String.valueOf(expenditure.getExpenditureTypesId().getName()));
         if (expenditure.getCurrentAssetsTypeId() != null) {
-            holder.textTypeOfCostAndCountAndMeasure.setText(String.format(Locale.getDefault(), "%s, %.2f %s"
+            holder.textTypeOfCostAndCountAndMeasure.setText(String.format(Locale.getDefault(), "%s, %.0f %s"
                     , expenditure.getCurrentAssetsTypeId().getName()
                     , expenditure.getAmount()
                     , expenditure.getMeasureUnit().getName()));
         } else {
-            holder.textTypeOfCostAndCountAndMeasure.setText(String.format(Locale.getDefault(), "%s, %.2f %s"
+            holder.textTypeOfCostAndCountAndMeasure.setText(String.format(Locale.getDefault(), "%s, %.0f %s"
                     , expenditure.getComment()
                     , expenditure.getAmount()
                     , expenditure.getMeasureUnit().getName()));
         }
-        holder.textPayerAndCount.setText(String.format(Locale.getDefault(), "%s, %.2f грн"
+        holder.textPayerAndCount.setText(String.format(Locale.getDefault(), "%s, %.0f грн"
                 , expenditure.getPayer().getName()
                 , expenditure.getMoney()));
 

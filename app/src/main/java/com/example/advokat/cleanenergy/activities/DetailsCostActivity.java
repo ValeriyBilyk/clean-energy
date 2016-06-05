@@ -87,7 +87,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
         setTitle("Додати");
 
         id = getIntent().getLongExtra(Expenditures.class.getName(), -1);
-        findExpendituresById();
+        findExpendituresById(id);
         findCurrentAsset();
         if (expenditures != null) {
             isEditing = true;
@@ -158,7 +158,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
         description.setText(String.valueOf(expenditures.getDescription()));
     }
 
-    private void findExpendituresById() {
+    private void findExpendituresById(long id) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         expenditures = realm.where(Expenditures.class).equalTo("id", id).findFirst();

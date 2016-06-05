@@ -8,11 +8,11 @@ public class IncomeCategory extends RealmObject {
 
     @PrimaryKey
     private long id;
-    private RealmList<BuyerList> buyerList;
-    private RealmList<LocationsTypesList> locationsTypesList;
-    private RealmList<IncomeTypesList> incomeTypesList;
-    private RealmList<IncomeSourceList> incomeSourceList;
-    private RealmList<ProductTypesList> productTypesList;
+    RealmList<BuyerList> buyerList;
+    RealmList<LocationsTypesList> locationsTypesList;
+    RealmList<IncomeTypesList> incomeTypesList;
+    RealmList<IncomeSourceList> incomeSourceList;
+    RealmList<ProductTypesList> productTypesList;
 
     public long getId() {
         return id;

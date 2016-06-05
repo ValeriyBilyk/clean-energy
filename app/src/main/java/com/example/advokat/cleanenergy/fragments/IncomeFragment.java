@@ -1,11 +1,11 @@
 package com.example.advokat.cleanenergy.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +13,14 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.advokat.cleanenergy.R;
+import com.example.advokat.cleanenergy.activities.DetailsIncomeActivity;
 import com.example.advokat.cleanenergy.adapters.IncomeAdapter;
 import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
 import com.example.advokat.cleanenergy.entities.income.IncomeList;
 import com.example.advokat.cleanenergy.entities.income.Incomes;
 import com.example.advokat.cleanenergy.rest.ApiClient;
 import com.example.advokat.cleanenergy.utils.PreferenceManager;
+import com.example.advokat.cleanenergy.utils.Utils;
 
 import java.util.List;
 
@@ -54,8 +56,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
         swipeRefreshLayout.setOnRefreshListener(this);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        Utils.addHorizontalDivider(recyclerView, getContext(), Utils.MARGIN_LEFT_0, Utils.MARGIN_RIGHT_0);
 
         adapter = new IncomeAdapter();
         recyclerView.setAdapter(adapter);
@@ -127,8 +128,12 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
 
     @Override
     public void onClick(View v) {
-        /*Intent intent = new Intent(getActivity().getApplicationContext(), DetailsIncomeActivity.class);
-        startActivity(intent);*/
+        switch (v.getId()) {
+            case R.id.fab_add_data:
+                Intent intent = new Intent(getActivity().getApplicationContext(), DetailsIncomeActivity.class);
+                startActivity(intent);
+                break;
+        }
     }
 
     @Override

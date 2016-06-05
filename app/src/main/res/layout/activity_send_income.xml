@@ -110,10 +110,10 @@
 
             <LinearLayout
                 android:id="@+id/volatile_buyer"
-                android:visibility="gone"
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <EditText
                     android:id="@+id/edit_text_volatile_buyer"
@@ -133,7 +133,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Населений пункт"
-                        android:inputType="numberDecimal"
                         android:textSize="14sp" />
 
                 </android.support.design.widget.TextInputLayout>
@@ -251,7 +250,8 @@
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp">
 
                 <EditText
                     android:id="@+id/date_of_cost"
@@ -279,7 +279,7 @@
                 android:layout_height="wrap_content">
 
                 <Button
-                    android:id="@+id/button_send_data"
+                    android:id="@+id/button_send_data_income"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"

@@ -10,10 +10,10 @@
     android:paddingTop="8dp">
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/linearLayout">
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -87,11 +87,11 @@
         android:id="@+id/text_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="02-06-2016"
-        android:textSize="12sp"
+        android:layout_alignEnd="@+id/linearLayout"
         android:layout_alignParentBottom="true"
         android:layout_alignRight="@+id/linearLayout"
-        android:layout_alignEnd="@+id/linearLayout" />
+        android:text="02-06-2016"
+        android:textSize="12sp" />
 
 
 </RelativeLayout>

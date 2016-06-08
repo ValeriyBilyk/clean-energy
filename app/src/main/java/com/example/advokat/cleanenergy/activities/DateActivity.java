@@ -1,5 +1,7 @@
 package com.example.advokat.cleanenergy.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +12,11 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.advokat.cleanenergy.R;
-import com.example.advokat.cleanenergy.entities.IncomesDateFilter;
+import com.example.advokat.cleanenergy.entities.DateFilter;
 import com.example.advokat.cleanenergy.entities.RealmInteger;
+import com.example.advokat.cleanenergy.fragments.IncomeFragment;
 import com.example.advokat.cleanenergy.utils.DateUtil;
+import com.example.advokat.cleanenergy.utils.Utils;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import java.text.ParseException;
@@ -27,6 +31,7 @@ public class DateActivity extends AppCompatActivity implements DatePickerDialog.
 
     private static final int DATE_START = 1;
     private static final int DATE_STOP = 2;
+    private int operationId;
 
     private Date dateStart;
     private Date dateStop;
@@ -35,6 +40,7 @@ public class DateActivity extends AppCompatActivity implements DatePickerDialog.
     private EditText textDateStart;
     private EditText textDateStop;
     private Button btnApplyDate;
+    private Button btnResetDate;
 
     private Realm realm = Realm.getDefaultInstance();
 
@@ -42,8 +48,14 @@ public class DateActivity extends AppCompatActivity implements DatePickerDialog.
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_date);
-        setTitle("Фільтр доходів за датою");
-
+        String name = getIntent().getStringExtra("key");
+        if (name.equals(IncomeFragment.class.getName())) {
+            setTitle("Фільтр доходів за датою");
+            operationId = Utils.INCOME;
+        } else {
+            setTitle("Фільтр витрат за датою");
+            operationId = Utils.COST;
+        }
         initLayout();
 
     }
@@ -58,14 +70,16 @@ public class DateActivity extends AppCompatActivity implements DatePickerDialog.
         textDateStart = (EditText) findViewById(R.id.text_date_start);
         textDateStop = (EditText) findViewById(R.id.text_date_stop);
         btnApplyDate = (Button) findViewById(R.id.btn_apply_date_filter);
+        btnResetDate = (Button) findViewById(R.id.btn_reset_date_filter);
 
-        if (realm.where(IncomesDateFilter.class).findFirst() != null) {
-            textDateStart.setText(realm.where(IncomesDateFilter.class).findFirst().getDateStart());
-            textDateStop.setText(realm.where(IncomesDateFilter.class).findFirst().getDateStop());
+        if (realm.where(DateFilter.class).equalTo("id", operationId).findFirst() != null) {
+            textDateStart.setText(realm.where(DateFilter.class).equalTo("id", operationId).findFirst().getDateStart());
+            textDateStop.setText(realm.where(DateFilter.class).equalTo("id", operationId).findFirst().getDateStop());
             initDates();
         }
 
         btnApplyDate.setOnClickListener(this);
+        btnResetDate.setOnClickListener(this);
 
         textDateStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,15 +158,47 @@ public class DateActivity extends AppCompatActivity implements DatePickerDialog.
                 String dStart = textDateStart.getText().toString();
                 String dStop = textDateStop.getText().toString();
                 if ((DateUtil.isValidStringBetweenDates(dStart, dStop)) || (DateUtil.isValidBetweenDates(dateStart, dateStop))) {
-                    copyIncomesDateFilterToRealm();
+                    copyDateFilterToRealm(operationId);
                     this.finish();
                 }
+                break;
+            case R.id.btn_reset_date_filter:
+                showDialog();
                 break;
         }
     }
 
-    private void copyIncomesDateFilterToRealm() {
-        IncomesDateFilter dateFilter = new IncomesDateFilter();
+    private void showDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Ви дійсно бажаєте очистити фільтр по даті?");
+
+        alertDialogBuilder.setPositiveButton("Так", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                deleteDateFilterFromRealm();
+                finish();
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("Ні",new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    private void deleteDateFilterFromRealm() {
+        realm.beginTransaction();
+        realm.where(DateFilter.class).equalTo("id", operationId).findFirst().deleteFromRealm();
+        realm.commitTransaction();
+    }
+
+    private void copyDateFilterToRealm(int id) {
+        DateFilter dateFilter = new DateFilter();
         RealmInteger realmYear;
         RealmInteger realmMonth;
         RealmList<RealmInteger> realmYearsList = new RealmList<>();
@@ -174,6 +220,11 @@ public class DateActivity extends AppCompatActivity implements DatePickerDialog.
         realmMonth.setValue(DateUtil.getMonth(dateStop));
         realmMonthsList.add(realmMonth);
 
+        if (id == Utils.COST) {
+            dateFilter.setId(Utils.COST);
+        } else {
+            dateFilter.setId(Utils.INCOME);
+        }
         dateFilter.setYear(realmYearsList);
         dateFilter.setMonth(realmMonthsList);
         dateFilter.setDateStart(textDateStart.getText().toString());

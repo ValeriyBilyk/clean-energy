@@ -5,7 +5,7 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class IncomesDateFilter extends RealmObject {
+public class DateFilter extends RealmObject {
 
     @PrimaryKey
     private long id;

@@ -24,12 +24,12 @@
         <item
             android:id="@+id/statistic_cost"
             android:checked="false"
-            android:title="Статистика витрат" />
+            android:title="Бартер" />
 
         <item
             android:id="@+id/statistic_income"
             android:checked="false"
-            android:title="Статистика доходів" />
+            android:title="Борги" />
 
     </group>
 

@@ -16,13 +16,16 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.advokat.cleanenergy.R;
+import com.example.advokat.cleanenergy.activities.DateActivity;
 import com.example.advokat.cleanenergy.activities.DetailsCostActivity;
 import com.example.advokat.cleanenergy.adapters.CostAdapter;
 import com.example.advokat.cleanenergy.entities.CurrentAsset;
+import com.example.advokat.cleanenergy.entities.DateFilter;
 import com.example.advokat.cleanenergy.entities.cost.Cost;
 import com.example.advokat.cleanenergy.entities.cost.Expenditures;
 import com.example.advokat.cleanenergy.rest.ApiClient;
 import com.example.advokat.cleanenergy.rest.requests.AuthRequest;
+import com.example.advokat.cleanenergy.rest.requests.BetweenDateRequest;
 import com.example.advokat.cleanenergy.utils.PreferenceManager;
 import com.example.advokat.cleanenergy.utils.Utils;
 
@@ -62,9 +65,6 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         swipeRefreshLayout.setOnRefreshListener(this);
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
-       /* recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));*/
-
         Utils.addHorizontalDivider(recyclerView, getContext(), Utils.MARGIN_LEFT_0, Utils.MARGIN_RIGHT_0);
 
         fabAddData = (FloatingActionButton) view.findViewById(R.id.fab_add_data);
@@ -73,14 +73,13 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         adapter = new CostAdapter();
         recyclerView.setAdapter(adapter);
 
-//        if (realm.where(Expenditures.class).findFirst() == null) {
-        loadItems();
+        if (getDateFilter() != null) {
+            loadItemsBetweenDate();
+        } else {
+            loadItems();
+        }
         loadCategoryItems();
-//        } else {
-          /*  List<Expenditures> expenditures = realm.where(Expenditures.class).findAll();
-            adapter.addAll(expenditures);
-            progressBar.setVisibility(View.GONE);
-        }*/
+
     }
 
     private void loadItems() {
@@ -139,9 +138,42 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         });
     }
 
+    private DateFilter getDateFilter() {
+        realm.beginTransaction();
+        DateFilter dateFilter = realm.where(DateFilter.class).equalTo("id", Utils.COST).findFirst();
+        realm.commitTransaction();
+        return dateFilter;
+    }
+
+    private void loadItemsBetweenDate() {
+        progressBar.setVisibility(View.VISIBLE);
+        ApiClient.retrofit().getMainService().getCostsBetweenDate(BetweenDateRequest
+                .getBetweenDataRequest(getDateFilter())).enqueue(new Callback<Cost>() {
+            @Override
+            public void onResponse(Call<Cost> call, Response<Cost> response) {
+                if (response.isSuccessful()) {
+                    copyAllExpendituresToRealm(response.body().getExpenditures());
+                    adapter.addAll(response.body().getExpenditures());
+                }
+                swipeRefreshLayout.setRefreshing(false);
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailure(Call<Cost> call, Throwable t) {
+                swipeRefreshLayout.setRefreshing(false);
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+
     @Override
     public void onRefresh() {
-        loadItems();
+        if (getDateFilter() != null) {
+            loadItemsBetweenDate();
+        } else {
+            loadItems();
+        }
         loadCategoryItems();
     }
 
@@ -154,7 +186,6 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         }
     }
 
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_choose_date, menu);
@@ -164,7 +195,9 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sort_by_date:
-                adapter.sortByDate();
+                Intent intent = new Intent(getContext(), DateActivity.class);
+                intent.putExtra("key", CostFragment.class.getName());
+                startActivity(intent);
                 return true;
         }
         return super.onOptionsItemSelected(item);

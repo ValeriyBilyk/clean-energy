@@ -19,9 +19,7 @@ import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DateActivity;
 import com.example.advokat.cleanenergy.activities.DetailsIncomeActivity;
 import com.example.advokat.cleanenergy.adapters.IncomeAdapter;
-import com.example.advokat.cleanenergy.entities.AccessKeyDto;
-import com.example.advokat.cleanenergy.entities.IncomesDateFilter;
-import com.example.advokat.cleanenergy.entities.RealmInteger;
+import com.example.advokat.cleanenergy.entities.DateFilter;
 import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
 import com.example.advokat.cleanenergy.entities.income.IncomeList;
 import com.example.advokat.cleanenergy.entities.income.Incomes;
@@ -33,7 +31,6 @@ import com.example.advokat.cleanenergy.utils.Utils;
 import java.util.List;
 
 import io.realm.Realm;
-import io.realm.RealmList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,8 +41,6 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
     private IncomeAdapter adapter;
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton fabAddData;
-
-    IncomesDateFilter incomesDateFilter;
 
     private Realm realm = Realm.getDefaultInstance();
 
@@ -78,7 +73,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
         fabAddData.setOnClickListener(this);
 
 //        loadItems();
-        if (getIncomesDateFilter() != null) {
+        if (getDateFilter() != null) {
             loadItemsBetweenDate();
         } else {
             loadItems();
@@ -92,11 +87,11 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
 
     }
 
-    private IncomesDateFilter getIncomesDateFilter() {
+    private DateFilter getDateFilter() {
         realm.beginTransaction();
-        IncomesDateFilter incomesDateFilter = realm.where(IncomesDateFilter.class).findFirst();
+        DateFilter dateFilter = realm.where(DateFilter.class).equalTo("id", Utils.INCOME).findFirst();
         realm.commitTransaction();
-        return incomesDateFilter;
+        return dateFilter;
     }
 
     private void loadCategoryItems() {
@@ -120,32 +115,9 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
                 });
     }
 
-    private BetweenDateRequest getBetweenDataRequest(IncomesDateFilter incomesDateFilter) {
-        RealmList<RealmInteger> listYear = incomesDateFilter.getYear();
-        Integer[] arrYear = new Integer[listYear.size()];
-        int i = 0;
-        for (RealmInteger realmInteger : listYear) {
-            arrYear[i] = realmInteger.getValue();
-            i++;
-        }
-        RealmList<RealmInteger> listMonth = incomesDateFilter.getMonth();
-        Integer[] arrMonth = new Integer[listMonth.size()];
-        int j = 0;
-        for (RealmInteger realmInteger : listMonth) {
-            arrMonth[j] = realmInteger.getValue() - 1;
-            j++;
-        }
-        BetweenDateRequest betweenDateRequest = new BetweenDateRequest();
-        AccessKeyDto accessKeyDto = new AccessKeyDto(PreferenceManager.getAccessToken());
-        betweenDateRequest.setAccessKeyDto(accessKeyDto);
-        betweenDateRequest.setYear(arrYear);
-        betweenDateRequest.setMonth(arrMonth);
-        return betweenDateRequest;
-    }
-
     private void loadItemsBetweenDate() {
         progressBar.setVisibility(View.VISIBLE);
-        ApiClient.retrofit().getMainService().getIncomesBetweenDate(getBetweenDataRequest(getIncomesDateFilter())).enqueue(new Callback<Incomes>() {
+        ApiClient.retrofit().getMainService().getIncomesBetweenDate(BetweenDateRequest.getBetweenDataRequest(getDateFilter())).enqueue(new Callback<Incomes>() {
             @Override
             public void onResponse(Call<Incomes> call, Response<Incomes> response) {
                 if ((response.isSuccessful()) && (response.body().getIncomeList() != null) ) {
@@ -211,6 +183,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
         switch (item.getItemId()) {
             case R.id.action_sort_by_date:
                 Intent intent = new Intent(getContext(), DateActivity.class);
+                intent.putExtra("key", IncomeFragment.class.getName());
                 startActivity(intent);
                 return true;
         }
@@ -230,7 +203,7 @@ public class IncomeFragment extends Fragment implements View.OnClickListener, Sw
     @Override
     public void onRefresh() {
 //        loadItems();
-        if (getIncomesDateFilter() != null) {
+        if (getDateFilter() != null) {
             loadItemsBetweenDate();
         } else {
             loadItems();

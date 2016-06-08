@@ -44,6 +44,15 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/btn_reset_date_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:text="Очистити"
+        android:textColor="@color/windowBackground"
+        />
+
+    <Button
         android:id="@+id/btn_apply_date_filter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

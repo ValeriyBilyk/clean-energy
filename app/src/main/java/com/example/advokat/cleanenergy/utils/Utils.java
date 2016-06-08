@@ -9,6 +9,9 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 public class Utils {
 
+    public static final int COST = 1;
+    public static final int INCOME = 2;
+
     public static final int MARGIN_LEFT_0 = 0;
     public static final int MARGIN_RIGHT_0 = 0;
 

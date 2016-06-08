@@ -6,6 +6,7 @@ import com.example.advokat.cleanenergy.entities.cost.Cost;
 import com.example.advokat.cleanenergy.entities.income.IncomeCategory;
 import com.example.advokat.cleanenergy.entities.income.Incomes;
 import com.example.advokat.cleanenergy.rest.requests.AuthRequest;
+import com.example.advokat.cleanenergy.rest.requests.BetweenDateRequest;
 import com.example.advokat.cleanenergy.rest.requests.DataRequest;
 import com.example.advokat.cleanenergy.rest.requests.IncomeRequest;
 
@@ -62,4 +63,10 @@ public interface MainService {
     Call<Integer> deleteExpenditure(@Body DataRequest dataRequest);
 
     Call<ResponseBody> deleteIncome(long id);
+
+    @POST("user/api/expenditure/get/betweenDate")
+    Call<Cost> getCostsBetweenDate(@Body BetweenDateRequest betweenDateRequest);
+
+    @POST("user/api/income/get/betweenDate")
+    Call<Incomes> getIncomesBetweenDate(@Body BetweenDateRequest betweenDateRequest);
 }

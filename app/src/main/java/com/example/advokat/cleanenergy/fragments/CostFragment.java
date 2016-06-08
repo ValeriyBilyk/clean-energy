@@ -157,7 +157,7 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_expenditure, menu);
+        inflater.inflate(R.menu.menu_choose_date, menu);
     }
 
     @Override

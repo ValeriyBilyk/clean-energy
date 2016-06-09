@@ -283,17 +283,13 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String month = "";
-        String day = "";
-        if (String.valueOf(monthOfYear).length() < 2) {
-            month = "0" + (monthOfYear + 1);
-        } else {
-            month = String.valueOf((monthOfYear + 1));
+        String month = String.valueOf(monthOfYear + 1);
+        if (month.length() < 2) {
+            month = "0" + month;
         }
-        if (String.valueOf(dayOfMonth).length() < 2) {
-            day = "0" + (dayOfMonth);
-        } else {
-            day = String.valueOf(dayOfMonth);
+        String day = String.valueOf(dayOfMonth);
+        if (day.length() < 2) {
+            day = "0" + day;
         }
         String date = year + "-" + month + "-" + day;
         dateOfCost.setText(date);
@@ -400,7 +396,7 @@ public class DetailsCostActivity extends AppCompatActivity implements DatePicker
                     goToMainActivity();
                     Toast.makeText(getApplicationContext(), "Успішно", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Не успіх", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Не відправлено", Toast.LENGTH_SHORT).show();
                 }
             }
 

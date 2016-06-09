@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.entities.DateFilter;
@@ -151,12 +152,25 @@ public class DateActivity extends AppCompatActivity implements DatePickerDialog.
         }
     }
 
+    private boolean verifyDateText(String dateStart, String dateStop) {
+        if (dateStart.equals("")) {
+            Toast.makeText(getApplicationContext(), "Перевірте початкову дату", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (dateStop.equals("")) {
+            Toast.makeText(getApplicationContext(), "Перевірте кінцеву дату", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_apply_date_filter:
                 String dStart = textDateStart.getText().toString();
                 String dStop = textDateStop.getText().toString();
+                if (!verifyDateText(dStart, dStop)) return;
                 if ((DateUtil.isValidStringBetweenDates(dStart, dStop)) || (DateUtil.isValidBetweenDates(dateStart, dateStop))) {
                     copyDateFilterToRealm(operationId);
                     this.finish();

@@ -384,17 +384,13 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String month = "";
-        String day = "";
-        if (String.valueOf(monthOfYear).length() < 2) {
-            month = "0" + (monthOfYear + 1);
-        } else {
-            month = String.valueOf((monthOfYear + 1));
+        String month = String.valueOf(monthOfYear + 1);
+        if (month.length() < 2) {
+            month = "0" + month;
         }
-        if (String.valueOf(dayOfMonth).length() < 2) {
-            day = "0" + (dayOfMonth);
-        } else {
-            day = String.valueOf(dayOfMonth);
+        String day = String.valueOf(dayOfMonth);
+        if (day.length() < 2) {
+            day = "0" + day;
         }
         String date = year + "-" + month + "-" + day;
         dateOfCost.setText(date);
@@ -454,13 +450,14 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), "update", Toast.LENGTH_SHORT).show();
+                    DetailsIncomeActivity.this.finish();
+                    Toast.makeText(getApplicationContext(), "Редаговано", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -505,13 +502,14 @@ public class DetailsIncomeActivity extends AppCompatActivity implements DatePick
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 if (response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), "1", Toast.LENGTH_SHORT).show();
+                    DetailsIncomeActivity.this.finish();
+                    Toast.makeText(getApplicationContext(), "Додано", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "2", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Помилка", Toast.LENGTH_SHORT).show();
             }
         });
     }

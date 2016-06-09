@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.advokat.cleanenergy.R;
 import com.example.advokat.cleanenergy.activities.DateActivity;
@@ -77,6 +78,7 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             loadItemsBetweenDate();
         } else {
             loadItems();
+            Toast.makeText(getContext(), "Поточний місяць", Toast.LENGTH_SHORT).show();
         }
         loadCategoryItems();
 
@@ -173,6 +175,7 @@ public class CostFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             loadItemsBetweenDate();
         } else {
             loadItems();
+            Toast.makeText(getContext(), "Поточний місяць", Toast.LENGTH_SHORT).show();
         }
         loadCategoryItems();
     }
